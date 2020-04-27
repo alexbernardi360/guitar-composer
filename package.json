@@ -1,0 +1,29 @@
+{
+  "name": "guitar-composer",
+  "version": "1.0.0",
+  "description": "A web API for guitarists.",
+  "main": "api.js",
+  "scripts": {
+    "start": "node api.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexbernardi360/guitar-composer.git"
+  },
+  "author": "Alessandro Bernardi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexbernardi360/guitar-composer/issues"
+  },
+  "homepage": "https://github.com/alexbernardi360/guitar-composer#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "pg": "^8.0.2",
+    "pg-connection-string": "^2.2.0",
+    "validator": "^13.0.0"
+  },
+  "devDependencies": {
+    "node-env-run": "^3.0.2"
+  }
+}
