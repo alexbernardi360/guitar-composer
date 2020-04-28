@@ -20,7 +20,7 @@ const listener = app.listen(process.env.PORT, function() {
 
 // ROOT PAGE
 app.get('/', function(request, response) {
-    response.status(200).send("Work in progress.");
+    response.status(200).send(`Work in progress.`);
 })
 
 /********************************/
@@ -33,9 +33,9 @@ app.post('/api/join', async function(request, response) {
     var password        = request.body.password.split("'").join("`");;
 
     if (!(await validateUsername(username)))
-        response.status(422).send('Username not available.');
+        response.status(422).send(`Username not available.`);
     else if (!validatePassword(password))
-        response.status(422).send('Wrong password format.');
+        response.status(422).send(`Wrong password format.`);
     else {
         var queryString = `INSERT INTO public."Users" (username, password) ` +
                           `VALUES ('${username}', '${password}')`;       
@@ -44,7 +44,7 @@ app.post('/api/join', async function(request, response) {
                 console.log(error);
                 response.status(400).send(error);
             } else {
-                console.log('New account created: ' + username);
+                console.log(`New account created: ` + username);
                 response.status(200).send(`${username}, registration successful.`);
             }
         });
@@ -56,7 +56,7 @@ app.delete('/api/deleteAccount', function (request, response) {
     var username        = request.body.username.split("'").join("`");;
     var password        = request.body.password.split("'").join("`");;
 
-    var queryString     = `DELETE FROM public.\"Users\" WHERE username='${username}' AND password='${password}'`;
+    var queryString     = `DELETE FROM public."Users" WHERE username='${username}' AND password='${password}'`;
 
     pool.query(queryString, function(error, result) {
         if (error) {
@@ -64,12 +64,12 @@ app.delete('/api/deleteAccount', function (request, response) {
             response.status(400).send(error);
         } else 
             if (result.rowCount > 0) {
-                console.log(username + ' deleted.');
+                console.log(`${username} deleted.`);
                 response.status(200).send(`${username} deleted.`);
             }
             else {
                 console.log(`${request.ip} tried to delete the account: ${username}`);
-                response.status(401).send('Authentication Failed: invalid username and/or password.');
+                response.status(401).send(`Authentication Failed: invalid username and/or password.`);
             }
     });
 })
@@ -89,9 +89,9 @@ app.post('/api/addSong', async function(request, response) {
     console.log(title);
 
     if (!await validateAuth(username, password))
-        response.status(401).send('Authentication Failed: invalid username and/or password.');
+        response.status(401).send(`Authentication Failed: invalid username and/or password.`);
     else if (!await validateTitle(title))
-        response.status(403).send('The song already exists.');
+        response.status(403).send(`The song already exists.`);
     else { 
         var queryString = `INSERT INTO public."Songs" (title, username_fk, artist, tuning, capo, note, content) ` +
                           `VALUES ('${[title, username, artist, tuning, capo, note, content].join('\',\'')}')`;
@@ -102,7 +102,7 @@ app.post('/api/addSong', async function(request, response) {
                 response.status(400).send(error);
             } else {
                 console.log(`${username} added: ${title} by ${artist}`);
-                response.status(200).send('Song successfully added.');
+                response.status(200).send(`Song successfully added.`);
             }
         });
     }
@@ -121,24 +121,51 @@ app.put('/api/editSong', async function(request, response) {
     var password        = request.body.password.split("'").join("`");
 
     if (await validateTitle(title))
-        response.status(404).send('Song not found.');
+        response.status(404).send(`Song not found.`);
     else if (await getUserFromTitle(title) != username)
         response.status(403).send(`The user: ${username}, does not have permission to edit the song.`);
     else if (!await validateAuth(username, password))
-        response.status(401).send('Authentication Failed: invalid username and/or password.');
+        response.status(401).send(`Authentication Failed: invalid username and/or password.`);
     else {
-        var queryString = `UPDATE public."Songs" SET artist='${artist}', tuning='${tuning}',capo='${capo}', note='${note}', content='${content}'`;
+        var queryString = `UPDATE public."Songs" ` +
+                          `SET artist='${artist}', tuning='${tuning}',capo='${capo}', note='${note}', content='${content}' ` + 
+                          `WHERE title='${title}'`;
         pool.query(queryString, function(error, result) {
             if (error) {
                 console.log(error);
                 response.status(400).send(error);
             } else {
                 console.log(`${username} edited: ${title} by ${artist}`);
-                response.status(200).send('Song successfully edited.');
+                response.status(200).send(`Song successfully edited.`);
             }
         });
     }
-    
+});
+
+// Delete a song in the API.
+app.delete('/api/deleteSong', async function(request, response) {
+    var title           = request.body.title.split("'").join("`");
+    var username        = request.body.username.split("'").join("`");
+    var password        = request.body.password.split("'").join("`");
+
+    if (await validateTitle(title))
+        response.status(404).send('Song not found.');
+    else if (await getUserFromTitle(title) != username)
+        response.status(403).send(`The user: ${username}, does not have permission to delete the song.`);
+    else if (!await validateAuth(username, password))
+        response.status(401).send(`Authentication Failed: invalid username and/or password.`);
+    else {
+        var queryString = `DELETE FROM public."Songs" WHERE title='${title}' AND username_fk='${username}'`;
+        pool.query(queryString, function(error, result) {
+            if (error) {
+                console.log(error);
+                response.status(400).send(error);
+            } else {
+                console.log(`${username} deleted: ${title} by ${artist}`);
+                response.status(200).send(`Song successfully deleted.`);
+            }
+        });
+    }
 });
 
 /****************************/
