@@ -2,7 +2,6 @@ var express         = require('express');
 var bodyParser      = require('body-parser');
 var pg              = require('pg');
 var parse_cs        = require('pg-connection-string').parse;
-var validator       = require('validator');
 
 // db connection
 var config          = parse_cs(process.env.DATABASE_URL);
@@ -29,10 +28,10 @@ app.get('/', function(request, response) {
 
 // Register in the API.
 app.post('/api/join', async function(request, response) {
-    var username        = request.body.username.split("'").join("`");;
-    var password        = request.body.password.split("'").join("`");;
+    var username        = request.body.username.split("'").join("`");
+    var password        = request.body.password.split("'").join("`");
 
-    if (!(await validateUsername(username)))
+    if (!await validateUsername(username))
         response.status(422).send(`Username not available.`);
     else if (!validatePassword(password))
         response.status(422).send(`Wrong password format.`);
@@ -76,7 +75,7 @@ app.delete('/api/deleteAccount', function (request, response) {
 
 // Add a new song in the API.
 app.post('/api/addSong', async function(request, response) {
-    var title            = request.body.title.split("'").join("`");
+    var title           = request.body.title.split("'").join("`");
     var artist          = request.body.artist.split("'").join("`");
     var tuning          = request.body.tuning.split("'").join("`");
     var capo            = request.body.capo.split("'").join("`");
@@ -86,11 +85,9 @@ app.post('/api/addSong', async function(request, response) {
     var username        = request.body.username;
     var password        = request.body.password;
 
-    console.log(title);
-
     if (!await validateAuth(username, password))
         response.status(401).send(`Authentication Failed: invalid username and/or password.`);
-    else if (!await validateTitle(title))
+    else if (!await validateSong(title, artist))
         response.status(403).send(`The song already exists.`);
     else { 
         var queryString = `INSERT INTO public."Songs" (title, username_fk, artist, tuning, capo, note, content) ` +
@@ -120,7 +117,7 @@ app.put('/api/editSong', async function(request, response) {
     var username        = request.body.username.split("'").join("`");
     var password        = request.body.password.split("'").join("`");
 
-    if (await validateTitle(title))
+    if (await validateSong(title, artist))
         response.status(404).send(`Song not found.`);
     else if (await getUserFromTitle(title) != username)
         response.status(403).send(`The user: ${username}, does not have permission to edit the song.`);
@@ -128,7 +125,7 @@ app.put('/api/editSong', async function(request, response) {
         response.status(401).send(`Authentication Failed: invalid username and/or password.`);
     else {
         var queryString = `UPDATE public."Songs" ` +
-                          `SET artist='${artist}', tuning='${tuning}',capo='${capo}', note='${note}', content='${content}' ` + 
+                          `SET artist='${artist}', tuning='${tuning}', capo='${capo}', note='${note}', content='${content}' ` + 
                           `WHERE title='${title}'`;
         pool.query(queryString, function(error, result) {
             if (error) {
@@ -145,10 +142,11 @@ app.put('/api/editSong', async function(request, response) {
 // Delete a song in the API.
 app.delete('/api/deleteSong', async function(request, response) {
     var title           = request.body.title.split("'").join("`");
+    var artist          = request.body.artist.split("'").join("`");
     var username        = request.body.username.split("'").join("`");
     var password        = request.body.password.split("'").join("`");
 
-    if (await validateTitle(title))
+    if (await validateSong(title, artist))
         response.status(404).send('Song not found.');
     else if (await getUserFromTitle(title) != username)
         response.status(403).send(`The user: ${username}, does not have permission to delete the song.`);
@@ -168,6 +166,31 @@ app.delete('/api/deleteSong', async function(request, response) {
     }
 });
 
+// Get a song from the API
+app.get('/api/getSong', function(request, response) {
+    var title           = request.params.title;
+    var artist          = request.params.artist;
+
+    var queryString = `SELECT * FROM public."Songs" WHERE title='${title}' AND  artist='${artist}'`;
+    pool.query(queryString, function(error, result) {
+        if (error) {
+            console.log(error);
+            response.status(400).send(error);
+        } else {
+            console.log(console.log(`Requested: ${title} by ${artist}`));
+            var song_obj = {
+                title:      result.rows[0].title,
+                artist:     result.rows[0].artist,
+                tuning:     result.rows[0].tuning,
+                capo:       result.rows[0].capo,
+                note:       result.rows[0].content,
+                username:   result.rows[0].username
+            }
+            response.status(200).send(song_obj);
+        }
+    });
+});
+
 /****************************/
 /*        FUNCTIONS         */
 /****************************/
@@ -181,12 +204,11 @@ async function getUserFromTitle(title) {
     } catch (error) {console.log(error);}
 }
 
-async function validateTitle(title) {
-    var queryString = `SELECT * FROM public."Songs" WHERE title='${title}'`;
-
+async function validateSong(title, artist) {
+    var queryString = `SELECT * FROM public."Songs" WHERE title='${title}' AND  artist='${artist}'`;
     try {
         var result = await pool.query(queryString);
-        if (result.rowCount == 0 && title.length > 0 && title.length <= 256)
+        if (result.rowCount == 0 && /^.{1,256}$/.test(title) && /^.{1,256}$/.test(artist))
             return true;
         else
             return false;
@@ -209,18 +231,18 @@ async function validateAuth(username, password) {
 async function validateUsername(username) {
     var queryString = `SELECT * FROM public."Users" WHERE username='${username}'`;
 
-    if (!validator.matches(username, '^[a-zA-Z0-9_\.\-]{5,20}$'))
-        return false;
-    else
+    if (/^[a-zA-Z0-9_\.\-]{5,20}$/.test(username))
         try {
             var result = await pool.query(queryString);
             if (result.rowCount == 0)
                 return true;
             else
                 return false;
-        } catch (error) {console.log(error);}
-}
+        } catch (error) {console.log(error);} 
+    else 
+        return false;
+}        
 
 function validatePassword(password) {
-    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_.1!@#\$%\^&\*])(?=.{6,256})/.test(password);
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_.!@#\$%\^&\*\\])(?=.{6,})/.test(password);
 }

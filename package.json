@@ -20,8 +20,7 @@
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "pg": "^8.0.2",
-    "pg-connection-string": "^2.2.0",
-    "validator": "^13.0.0"
+    "pg-connection-string": "^2.2.0"
   },
   "devDependencies": {
     "node-env-run": "^3.0.2"
