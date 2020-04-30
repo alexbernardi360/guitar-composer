@@ -191,32 +191,48 @@ app.get('/api/getSong', function(request, response) {
 });
 
 // Get a list of songs available in the API.
-app.get('/api/songList', function(request, response) {
+app.get('/api/songsList', function(request, response) {
     var queryString = `SELECT title, artist FROM public."Songs"`;
     pool.query(queryString, function(error, result) {
         if (error) {
             console.log(error);
             response.status(400).send(error);
-        } else {
+        } else if (result.rowCount > 0) {
             response.status(200).send(JSON.stringify(result.rows));
-        }
+        } else response.status(404).send('Songs not found.');
     });
 });
 
 // Get a list of songs by artist available in the API.
-app.get('/api/songByArtist', function(request, response) {
-    var artist          = request.query.artist;
+app.get('/api/getSongsByArtist', function(request, response) {
+    var artist          = request.query.artist.split("'").join("`");
 
     var queryString = `SELECT title, artist FROM public."Songs" WHERE artist='${artist}'`;
     pool.query(queryString, function(error, result) {
         if (error) {
             console.log(error);
             response.status(400).send(error);
-        } else {
+        } else if (result.rowCount > 0) {
             response.status(200).send(JSON.stringify(result.rows));
-        }
+        } else response.status(404).send('Songs not found.');
     });
 });
+
+// Get a list of songs by artist available in the API.
+app.get('/api/getSongsByTitle', function(request, response) {
+    var title           = request.query.title.split("'").join("`");
+
+    var queryString = `SELECT title, artist FROM public."Songs" WHERE title='${title}'`;
+    pool.query(queryString, function(error, result) {
+        if (error) {
+            console.log(error);
+            response.status(400).send(error);
+        } else if (result.rowCount > 0) {
+            response.status(200).send(JSON.stringify(result.rows));
+        } else response.status(404).send('Songs not found.');
+    });
+});
+
 
 /****************************/
 /*        FUNCTIONS         */
