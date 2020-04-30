@@ -177,7 +177,6 @@ app.get('/api/getSong', function(request, response) {
             console.log(error);
             response.status(400).send(error);
         } else if (result.rowCount > 0) {
-            console.log(console.log(`Requested: ${title} by ${artist}`));
             var song_obj = {
                 title:      result.rows[0].title,
                 artist:     result.rows[0].artist,
@@ -188,6 +187,20 @@ app.get('/api/getSong', function(request, response) {
             }
             response.status(200).send(song_obj);
         } else response.status(404).send('Song not found.');
+    });
+});
+
+// Get a list of songs available in the API.
+app.get('/api/songList', function(request, response) {
+    var queryString = `SELECT title, artist FROM public."Songs"`;
+    pool.query(queryString, function(error, result) {
+        if (error) {
+            console.log(error);
+            response.status(400).send(error);
+        } else {
+            console.log(result.rows);
+            response.status(200).send(result.rows);
+        }
     });
 });
 
