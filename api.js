@@ -198,8 +198,22 @@ app.get('/api/songList', function(request, response) {
             console.log(error);
             response.status(400).send(error);
         } else {
-            console.log(result.rows);
-            response.status(200).send(result.rows);
+            response.status(200).send(JSON.stringify(result.rows));
+        }
+    });
+});
+
+// Get a list of songs by artist available in the API.
+app.get('/api/songByArtist', function(request, response) {
+    var artist          = request.query.artist;
+
+    var queryString = `SELECT title, artist FROM public."Songs" WHERE artist='${artist}'`;
+    pool.query(queryString, function(error, result) {
+        if (error) {
+            console.log(error);
+            response.status(400).send(error);
+        } else {
+            response.status(200).send(JSON.stringify(result.rows));
         }
     });
 });
