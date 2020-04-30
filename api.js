@@ -168,15 +168,15 @@ app.delete('/api/deleteSong', async function(request, response) {
 
 // Get a song from the API
 app.get('/api/getSong', function(request, response) {
-    var title           = request.params.title;
-    var artist          = request.params.artist;
+    var title           = request.query.title;
+    var artist          = request.query.artist;
 
     var queryString = `SELECT * FROM public."Songs" WHERE title='${title}' AND  artist='${artist}'`;
     pool.query(queryString, function(error, result) {
         if (error) {
             console.log(error);
             response.status(400).send(error);
-        } else {
+        } else if (result.rowCount > 0) {
             console.log(console.log(`Requested: ${title} by ${artist}`));
             var song_obj = {
                 title:      result.rows[0].title,
@@ -187,7 +187,7 @@ app.get('/api/getSong', function(request, response) {
                 username:   result.rows[0].username
             }
             response.status(200).send(song_obj);
-        }
+        } else response.status(404).send('Song not found.');
     });
 });
 
