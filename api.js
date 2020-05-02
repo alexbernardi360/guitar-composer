@@ -1,12 +1,8 @@
 var express         = require('express');
 var bodyParser      = require('body-parser');
-var pg              = require('pg');
-var parse_cs        = require('pg-connection-string').parse;
 var https           = require('https');
-
-// db connection
-var config          = parse_cs(process.env.DATABASE_URL);
-var pool            = new pg.Pool(config);
+var pool            = require('./lib/utils').pool;
+var utils           = require('./lib/utils');
 
 var app             = express();
 
@@ -32,9 +28,9 @@ app.post('/api/join', async function(request, response) {
     var username        = request.body.username.split("'").join("`");
     var password        = request.body.password.split("'").join("`");
 
-    if (!await validateUsername(username))
+    if (!await utils.validateUsername(username))
         response.status(422).send(`Username not available.`);
-    else if (!validatePassword(password))
+    else if (!utils.validatePassword(password))
         response.status(422).send(`Wrong password format.`);
     else {
         var queryString = `INSERT INTO public."Users" (username, password) ` +
@@ -86,9 +82,9 @@ app.post('/api/addSong', async function(request, response) {
     var username        = request.body.username;
     var password        = request.body.password;
 
-    if (!await validateAuth(username, password))
+    if (!await utils.validateAuth(username, password))
         response.status(401).send(`Authentication Failed: invalid username and/or password.`);
-    else if (!await validateSong(title, artist))
+    else if (!await utils.validateSong(title, artist))
         response.status(403).send(`The song already exists.`);
     else { 
         var queryString = `INSERT INTO public."Songs" (title, username_fk, artist, tuning, capo, note, content) ` +
@@ -118,11 +114,11 @@ app.put('/api/editSong', async function(request, response) {
     var username        = request.body.username.split("'").join("`");
     var password        = request.body.password.split("'").join("`");
 
-    if (await validateSong(title, artist))
+    if (await utils.validateSong(title, artist))
         response.status(404).send(`Song not found.`);
-    else if (await getUserFromTitle(title) != username)
+    else if (await utils.getUserFromTitle(title) != username)
         response.status(403).send(`The user: ${username}, does not have permission to edit the song.`);
-    else if (!await validateAuth(username, password))
+    else if (!await utils.validateAuth(username, password))
         response.status(401).send(`Authentication Failed: invalid username and/or password.`);
     else {
         var queryString = `UPDATE public."Songs" ` +
@@ -147,11 +143,11 @@ app.delete('/api/deleteSong', async function(request, response) {
     var username        = request.body.username.split("'").join("`");
     var password        = request.body.password.split("'").join("`");
 
-    if (await validateSong(title, artist))
+    if (await utils.validateSong(title, artist))
         response.status(404).send('Song not found.');
-    else if (await getUserFromTitle(title) != username)
+    else if (await utils.getUserFromTitle(title) != username)
         response.status(403).send(`The user: ${username}, does not have permission to delete the song.`);
-    else if (!await validateAuth(username, password))
+    else if (!await utils.validateAuth(username, password))
         response.status(401).send(`Authentication Failed: invalid username and/or password.`);
     else {
         var queryString = `DELETE FROM public."Songs" WHERE title='${title}' AND username_fk='${username}'`;
@@ -272,60 +268,3 @@ app.get('/api/songsListByTitle', function(request, response) {
         } else response.status(404).send('Songs not found.');
     });
 });
-
-
-/****************************/
-/*        FUNCTIONS         */
-/****************************/
-
-async function getUserFromTitle(title) {
-    var queryString = `SELECT username_fk FROM public."Songs" WHERE title='${title}'`;
-
-    try {
-        var result = await pool.query(queryString);
-        return(result.rows[0].username_fk);
-    } catch (error) {console.log(error);}
-}
-
-async function validateSong(title, artist) {
-    var queryString = `SELECT * FROM public."Songs" WHERE title='${title}' AND  artist='${artist}'`;
-    try {
-        var result = await pool.query(queryString);
-        if (result.rowCount == 0 && /^.{1,256}$/.test(title) && /^.{1,256}$/.test(artist))
-            return true;
-        else
-            return false;
-    } catch (error) {console.log(error);}
-}
-
-async function validateAuth(username, password) {
-    var queryString = `SELECT * FROM public."Users" WHERE username='${username}' AND password='${password}'`;
-
-    try {
-        var result = await pool.query(queryString);
-        if (result.rowCount > 0)
-            return true;
-        else
-            return false;
-        
-    } catch (error) {console.log(error);}
-}
-
-async function validateUsername(username) {
-    var queryString = `SELECT * FROM public."Users" WHERE username='${username}'`;
-
-    if (/^[a-zA-Z0-9_\.\-]{5,20}$/.test(username))
-        try {
-            var result = await pool.query(queryString);
-            if (result.rowCount == 0)
-                return true;
-            else
-                return false;
-        } catch (error) {console.log(error);} 
-    else 
-        return false;
-}        
-
-function validatePassword(password) {
-    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_.!@#\$%\^&\*\\])(?=.{6,})/.test(password);
-}
