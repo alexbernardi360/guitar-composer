@@ -2,6 +2,7 @@ var express         = require('express');
 var bodyParser      = require('body-parser');
 var pg              = require('pg');
 var parse_cs        = require('pg-connection-string').parse;
+var https           = require('https');
 
 // db connection
 var config          = parse_cs(process.env.DATABASE_URL);
@@ -167,27 +168,66 @@ app.delete('/api/deleteSong', async function(request, response) {
 });
 
 // Get a song from the API
-app.get('/api/getSong', function(request, response) {
+app.get('/api/getSong', async function(request, response) {
     var title           = request.query.title;
     var artist          = request.query.artist;
 
-    var queryString = `SELECT * FROM public."Songs" WHERE title='${title}' AND  artist='${artist}'`;
-    pool.query(queryString, function(error, result) {
-        if (error) {
-            console.log(error);
-            response.status(400).send(error);
-        } else if (result.rowCount > 0) {
-            var song_obj = {
-                title:      result.rows[0].title,
-                artist:     result.rows[0].artist,
-                tuning:     result.rows[0].tuning,
-                capo:       result.rows[0].capo,
-                note:       result.rows[0].content,
-                username:   result.rows[0].username
-            }
-            response.status(200).send(song_obj);
+    var queryString     = `SELECT * FROM public."Songs" WHERE title='${title}' AND  artist='${artist}'`;
+    var options         = {
+        host:   'theaudiodb.com',
+        path:   `/api/v1/json/${process.env.APIKEY}/searchtrack.php?s=${artist.split(" ").join("%20")}&t=${title.split(" ").join("%20")}`
+    }
+
+    try {
+        var result_query = await pool.query(queryString);
+        if (result_query.rowCount > 0) {
+            // Request for extra data from the API theaudiodb.com
+            var request = https.get(options, function (result) {
+                console.log(`statusCode: ${result.statusCode}`);
+                console.log(`headers: ${result.headers}`);
+
+                result.on('data', function(data) {
+                    // processing data from external API.
+                    data = JSON.parse(data);
+
+                    console.log(data);
+
+                    var song_obj = {
+                        title:      result_query.rows[0].title,
+                        artist:     result_query.rows[0].artist,
+                        tuning:     result_query.rows[0].tuning,
+                        capo:       result_query.rows[0].capo,
+                        note:       result_query.rows[0].content,
+                        username:   result_query.rows[0].username,
+                        album:      null,
+                        trackNo:    null,
+                        genre:      null,
+                        musicVid:   null
+                    }
+
+                    if (data.track) {
+                        song_obj.album      = data.track[0].strAlbum;
+                        song_obj.trackNo    = data.track[0].intTrackNumber;
+                        song_obj.genre      = data.track[0].strGenre;
+                        song_obj.musicVid   = data.track[0].strMusicVid;
+                    }
+
+                    response.status(200).send(song_obj);
+                });
+            });
+
+            request.on('error', function(error) {
+                console.error(e);
+            });
+
+            request.end();
+            
         } else response.status(404).send('Song not found.');
-    });
+
+    } catch (error) {
+        console.log(error);
+        response.status(400).send(error);
+    }
 });
 
 // Get a list of songs available in the API.
@@ -204,7 +244,7 @@ app.get('/api/songsList', function(request, response) {
 });
 
 // Get a list of songs by artist available in the API.
-app.get('/api/getSongsByArtist', function(request, response) {
+app.get('/api/songsListByArtist', function(request, response) {
     var artist          = request.query.artist.split("'").join("`");
 
     var queryString = `SELECT title, artist FROM public."Songs" WHERE artist='${artist}'`;
@@ -219,7 +259,7 @@ app.get('/api/getSongsByArtist', function(request, response) {
 });
 
 // Get a list of songs by artist available in the API.
-app.get('/api/getSongsByTitle', function(request, response) {
+app.get('/api/songsListByTitle', function(request, response) {
     var title           = request.query.title.split("'").join("`");
 
     var queryString = `SELECT title, artist FROM public."Songs" WHERE title='${title}'`;
