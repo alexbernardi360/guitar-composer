@@ -9,15 +9,25 @@ var app             = express();
 // use some express packages
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+app.use(express.static(`${__dirname}/views`));
+
 
 const listener = app.listen(process.env.PORT, function() {
     console.log(`The server is listening on port: ${listener.address().port}`);
 });
 
+/***********************************/
+/*        CLIENT ENDPOINTS         */
+/***********************************/
+
 // ROOT PAGE
 app.get('/', function(request, response) {
-    response.status(200).send(`Work in progress.`);
-})
+    response.status(200).sendFile(`${__dirname}/views/index.html`);
+});
+
+app.get('/searchTitle', function(request, response) {
+    response.status(200).sendFile(`${__dirname}/views/listTitles.html`);
+});
 
 /********************************/
 /*        API ENDPOINTS         */
@@ -168,7 +178,7 @@ app.get('/api/getSong', async function(request, response) {
     var title           = request.query.title;
     var artist          = request.query.artist;
 
-    var queryString     = `SELECT * FROM public."Songs" WHERE title='${title}' AND  artist='${artist}'`;
+    var queryString     = `SELECT * FROM public."Songs" WHERE title='${title.split("'").join("`")}' AND  artist='${artist.split("'").join("`")}'`;
     var options         = {
         host:   'theaudiodb.com',
         path:   `/api/v1/json/${process.env.APIKEY}/searchtrack.php?s=${artist.split(" ").join("%20")}&t=${title.split(" ").join("%20")}`
@@ -186,14 +196,13 @@ app.get('/api/getSong', async function(request, response) {
                     // processing data from external API.
                     data = JSON.parse(data);
 
-                    console.log(data);
-
                     var song_obj = {
                         title:      result_query.rows[0].title,
                         artist:     result_query.rows[0].artist,
                         tuning:     result_query.rows[0].tuning,
                         capo:       result_query.rows[0].capo,
-                        note:       result_query.rows[0].content,
+                        note:       result_query.rows[0].note,
+                        content:    result_query.rows[0].content,
                         username:   result_query.rows[0].username,
                         album:      null,
                         trackNo:    null,
