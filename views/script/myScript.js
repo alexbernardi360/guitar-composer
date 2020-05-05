@@ -8,42 +8,42 @@ function searchSong() {
 
 function createSongList(data) {
     console.log(data);
-    var songs = JSON.parse(data.responseText);
-    console.log(songs);
-    var element = document.getElementById("songList");
-    var tag = document.createElement("ul");
-    element.appendChild(tag);
-    var text = '';
-    if (data.status == 200)
-        for (var i = 0; i < songs.length; i++) {
-            tag = document.createElement("li");
-            text = document.createTextNode(`${songs[i].title} - ${songs[i].artist}`);
+    var element = document.getElementById('songList');
+    var tag     = null;
+    var text    = null;    
+    if (data.status == 200) {
+        var songs   = JSON.parse(data.responseText);
+        tag     = document.createElement('h1');
+        text    = document.createTextNode(`Results for: ${title}.`);
+        tag.appendChild(text);
+        element.appendChild(tag);
+        tag     = document.createElement('ul');
+        element.appendChild(tag);
+        for (var i = 0; (i < songs.length); i++) {
+            tag     = document.createElement('li');
+            text    = document.createTextNode(`${songs[i].title} - ${songs[i].artist}`);
             tag.appendChild(text);
             element.appendChild(tag);
         }
-    else {
-        tag = document.createElement("li");
-        text = document.createTextNode(songs.responseText);
+    } else {
+        tag     = document.createElement('h1');
+        text    = document.createTextNode(`Error 404: ${data.responseText}`);
         tag.appendChild(text);
         element.appendChild(tag);
-}
-}
-
-function httpGet(theUrl)
-{
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-    xmlHttp.send( null );
-    return xmlHttp.responseText;
+        tag     = document.createElement('h3');
+        text    = document.createTextNode(`No results for: ${title}`);
+        tag.appendChild(text);
+        element.appendChild(tag);
+    }
 }
 
-function httpGetAsync(theUrl, callback)
-{
+// Generic function to perform get requests.
+function httpGetAsync(url, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() { 
         if (xmlHttp.readyState == 4)
             callback(xmlHttp);
     }
-    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+    xmlHttp.open("GET", url, true); // true for asynchronous 
     xmlHttp.send(null);
 }
