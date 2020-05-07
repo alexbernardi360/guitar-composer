@@ -1,9 +1,35 @@
 function searchSong() {
     var title   = document.getElementById('title').value;
-    var url     = `./searchTitle?title=${title.split(" ").join("%20")}`;
+    var url     = `/searchTitle?title=${title.split(' ').join('%20')}`;
 
     if (title)
         location.href = url;
+}
+
+function signIn() {
+    var username    = document.getElementById('username').value;
+    var password    = document.getElementById('password').value;
+    var passConf    = document.getElementById('passwordConfirm').value;
+
+    var element     = document.getElementById('result-div');
+    var tag         = document.createElement('label');
+    var att = document.createAttribute("class");
+    att.value = "control-lable";
+    tag.setAttributeNode(att);
+    var text        = null;
+    if (username && password && passConf) {
+        if (passConf == password) {
+            var url     = '/api/join';
+            var params  = `username=${username}&password=${password}`
+            httpPostAsync(url, params, function(result) {
+                console.log(result);
+                alert(result.responseText);   
+            });
+        } else
+            alert('The two passwords must match.');
+    } else
+        alert('You must enter all the required data.');
+    
 }
 
 function createSongList(data) {
@@ -37,13 +63,29 @@ function createSongList(data) {
     }
 }
 
-// Generic function to perform get requests.
+// Generic function to perform GET requests.
 function httpGetAsync(url, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() { 
-        if (xmlHttp.readyState == 4)
+        if (xmlHttp.readyState == XMLHttpRequest.DONE)
             callback(xmlHttp);
     }
-    xmlHttp.open("GET", url, true); // true for asynchronous 
+    xmlHttp.open('GET', url, true);     // true for asynchronous 
     xmlHttp.send(null);
+}
+
+// Generic function to perfotm POST request.
+function httpPostAsync(url, params, callback) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open('POST', url, true);    // true for asynchronous 
+
+    //Send the proper header information along with the request
+    xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+    xmlHttp.onreadystatechange = function() {
+        if(xmlHttp.readyState == XMLHttpRequest.DONE) {
+            callback(xmlHttp);
+        }
+    }  
+    xmlHttp.send(params);
 }

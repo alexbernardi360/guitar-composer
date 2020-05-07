@@ -29,6 +29,10 @@ app.get('/searchTitle', function(request, response) {
     response.status(200).sendFile(`${__dirname}/views/listTitles.html`);
 });
 
+app.get('/register', function(request, response) {
+    response.status(200).sendFile(`${__dirname}/views/register.html`);
+})
+
 /********************************/
 /*        API ENDPOINTS         */
 /********************************/

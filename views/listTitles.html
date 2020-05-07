@@ -1,44 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <title>Guitar Composer</title>
-    <link rel="icon" href="img/guitar-headstock.ico">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="../css/style.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <script src="../script/myScript.js"></script>
-</head>
+    <head>
+        <title>Guitar Composer</title>
+        <link rel="icon" href="img/guitar-headstock.ico">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../css/style.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="../script/myScript.js"></script>
+    </head>
 
-<body>
-<div class="container-fluid">
-    <div class="row content">
-        <div class="col-sm-3 sidenav">
-            <h4>Guitar Composer</h4>
-            <ul class="nav nav-pills nav-stacked">
-                <li><a href="/">Home</a></li>
-            </ul>
+    <body>
+
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>                        
+                </button>
+                <a href="/">
+                    <img src="/img/guitar-headstock.png" alt="Guitar Composer" width="50" height="50">
+                </a>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/register"><span class="glyphicon glyphicon-log-in"></span> Register</a></li>
+                </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid">
+            <div class="row content">
+                <div class="col-sm-2">
+                </div>
+
+                <div class="col-sm-8" id="songList">
+                    <h4><small>Title Results</small></h4>
+                    <hr>
+                </div>
+                <script>
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const title     = urlParams.get('title');
+                    var url         = `./api/songsListByTitle?title=${title.split(" ").join("%20")}`;
+                    httpGetAsync(url, createSongList);
+                </script>
+
+                <div class="col-sm-2">
+                </div>
+            </div>
         </div>
 
-        <div class="col-sm-9" id="songList">
-            <h4><small>Title Results</small></h4>
-            <hr>
-        </div>
-        <script>
-            const urlParams = new URLSearchParams(window.location.search);
-            const title     = urlParams.get('title');
-            var url         = `./api/songsListByTitle?title=${title.split(" ").join("%20")}`;
-            httpGetAsync(url, createSongList);
-        </script>
-    </div>
-</div>
+        <footer class="container-fluid">
+            <p>Footer Text</p>
+        </footer>
 
-<footer class="container-fluid">
-    <p>Footer Text</p>
-</footer>
-
-</body>
+    </body>
 </html>
