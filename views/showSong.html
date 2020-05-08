@@ -32,7 +32,7 @@
                     <li><a href="/">Home</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="active"><a><span class="glyphicon glyphicon-log-in"></span> Register</a></li>
+                    <li class="active"><a href="/register"><span class="glyphicon glyphicon-log-in"></span> Register</a></li>
                 </ul>
                 </div>
             </div>
@@ -43,31 +43,37 @@
                 <div class="col-sm-2"></div>
 
                 <div class="col-sm-8" id="registration">
-                    <h4><small>Registration</small></h4>
+                    <h4><small>Show Song</small></h4>
                     <hr>
-                    
-                    <div class="form-group">
-                        <label for="username" class="control-label">Username</label>
-                        <input id="username" class="form-control" name="username" placeholder="Username">
-                    </div>
+                    <h1 id="title"></h1>
+                    <h2 id="artist">by </h2>
+                    <hr>
 
-                    <div class="form-group">
-                        <label for="password" class="control-label">Password</label>
-                        <div class="form-inline row">
-                            <div class="form-group col-sm-6">
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-                            </div>
-                            <div class="form-group col-sm-6">
-                                <input type="password" class="form-control" id="passwordConfirm" name="passwordConfirm" placeholder="Confirm password">
-                            </div>
+                    <div class="container-fluid">
+                        <div class="col-sm-6" id="sx-col">
+                            <p id="tuning"><b>Tuning: </b></p>
+                            <p id=capo><b>Capo: </b></p>
+                            <a target="_blank" id="musicVid" class="btn btn-primary">Music Video</a>
+                        </div>
+
+                        <div class="col-sm-6" id="dx-col">
+                            <p id="album"><b>Album: </b></p>
+                            <p id="trackNo"><b>Track No: </b></p>
+                            <p id="genre"><b>Genre: </b></p>
                         </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary" onclick="signIn()">Submit</button>
-                    </div>
-
+                    <hr>
+                    <pre class="pre-scrollable" style="max-height: 60px" id="note"><b>Note:</b><br></pre>
+                    <hr>
+                    <pre class="pre-scrollable" style="max-height: 80vh" id="content"></pre>
                 </div>
+                <script>
+                    var urlParams   = new URLSearchParams(window.location.search);
+                    var title       = urlParams.get('title');
+                    var artist      = urlParams.get('artist');
+                    var url         = `./api/getSong?title=${title.split(" ").join("%20")}&artist=${artist.split(" ").join("%20")}`;
+                    httpGetAsync(url, showSong);
+                </script>
 
                 <div class="col-sm-2"></div>
 

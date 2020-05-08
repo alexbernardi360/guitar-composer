@@ -29,6 +29,10 @@ app.get('/searchTitle', function(request, response) {
     response.status(200).sendFile(`${__dirname}/views/listTitles.html`);
 });
 
+app.get('/showSong', function(request, response) {
+    response.status(200).sendFile(`${__dirname}/views/showSong.html`);
+})
+
 app.get('/register', function(request, response) {
     response.status(200).sendFile(`${__dirname}/views/register.html`);
 })
@@ -179,13 +183,14 @@ app.delete('/api/deleteSong', async function(request, response) {
 
 // Get a song from the API
 app.get('/api/getSong', async function(request, response) {
-    var title           = request.query.title;
-    var artist          = request.query.artist;
+    var title           = request.query.title.split("`").join("'");
+    var artist          = request.query.artist.split("`").join("'");
 
     var queryString     = `SELECT * FROM public."Songs" WHERE title='${title.split("'").join("`")}' AND  artist='${artist.split("'").join("`")}'`;
+    var path = `/api/v1/json/${process.env.APIKEY}/searchtrack.php?s=${artist.split("`").join("`")}&t=${title.split("`").join("'")}`;
     var options         = {
         host:   'theaudiodb.com',
-        path:   `/api/v1/json/${process.env.APIKEY}/searchtrack.php?s=${artist.split(" ").join("%20")}&t=${title.split(" ").join("%20")}`
+        path:   path.split(" ").join("%20")
     }
 
     try {
@@ -256,7 +261,7 @@ app.get('/api/songsList', function(request, response) {
 app.get('/api/songsListByArtist', function(request, response) {
     var artist          = request.query.artist.split("'").join("`");
 
-    var queryString = `SELECT title, artist FROM public."Songs" WHERE artist='${artist}'`;
+    var queryString = `SELECT title, artist FROM public."Songs" WHERE artist ILIKE '${artist}'`;
     pool.query(queryString, function(error, result) {
         if (error) {
             console.log(error);
@@ -271,7 +276,7 @@ app.get('/api/songsListByArtist', function(request, response) {
 app.get('/api/songsListByTitle', function(request, response) {
     var title           = request.query.title.split("'").join("`");
 
-    var queryString = `SELECT title, artist FROM public."Songs" WHERE title='${title}'`;
+    var queryString = `SELECT title, artist FROM public."Songs" WHERE title ILIKE '${title}'`;
     pool.query(queryString, function(error, result) {
         if (error) {
             console.log(error);

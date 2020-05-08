@@ -43,13 +43,14 @@
                 <div class="col-sm-2">
                 </div>
 
-                <div class="col-sm-8" id="songList">
+                <div class="col-sm-8">
                     <h4><small>Title Results</small></h4>
                     <hr>
+                    <div class="list-group" id="result-div"></div>
                 </div>
                 <script>
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const title     = urlParams.get('title');
+                    var urlParams = new URLSearchParams(window.location.search);
+                    var title     = urlParams.get('title');
                     var url         = `./api/songsListByTitle?title=${title.split(" ").join("%20")}`;
                     httpGetAsync(url, createSongList);
                 </script>
