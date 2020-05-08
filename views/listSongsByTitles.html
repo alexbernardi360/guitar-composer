@@ -29,7 +29,7 @@
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a>Home</a></li>
+                    <li><a href="/">Home</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="/register"><span class="glyphicon glyphicon-log-in"></span> Register</a></li>
@@ -38,43 +38,30 @@
             </div>
         </nav>
 
-
         <div class="container-fluid">
             <div class="row content">
                 <div class="col-sm-2">
                 </div>
-                <div class="col-sm-8">
-                    <h4><small>Home Page</small></h4>
+
+                <div class="col-sm-8" id="result-div">
+                    <h4><small>Search Results</small></h4>
                     <hr>
-                    <h1>Welcome to Guitar Composer</h1>
+                    <h1 id="result-h1">seatch results by title: </h1>
                     <br>
-                    <h4>
-                        Guitar Composer is a platform for guitarists.<br>
-                        The intent is to make songs lyrics with chords, public to anyone.<br>
-                        Anyone can register and post content on the platform.<br>
-                    </h4>
-
-                    <hr>
-                    <div class="input-group search">
-                        <input id="title" type="text" class="form-control" placeholder="Search songs by title...">
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="button" onclick="searchSongs(true)">
-                                <span class="glyphicon glyphicon-search"></span>
-                            </button>
-                        </span>
-                    </div>
-
-                    <hr>
-                    <div class="input-group search">
-                        <input id="artist" type="text" class="form-control" placeholder="Search songs by artist...">
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="button" onclick="searchSongs(false)">
-                                <span class="glyphicon glyphicon-search"></span>
-                            </button>
-                        </span>
-                    </div>
-
                 </div>
+                <script>
+                    var urlParams   = new URLSearchParams(window.location.search);
+                    var search      = urlParams.get('search');
+
+                    var tag         = document.getElementById('result-h1');
+                    var text        = document.createTextNode(search);
+                    tag.appendChild(text);
+
+                    // Search songs by title
+                    var url         = `./api/songsListByTitle?title=${search.split(" ").join("%20")}`;
+                    httpGetAsync(url, createSongList);
+                </script>
+
                 <div class="col-sm-2">
                 </div>
             </div>

@@ -1,11 +1,24 @@
-function searchSong() {
-    var title   = document.getElementById('title').value;
-    var url     = `/searchTitle?title=${title.split(' ').join('%20')}`;
+// Function linked to the search button:
+// type == true  => search by title.
+// type == false => search by artist.
+function searchSongs(type) {
+    if (type === true) {
+        var search  = document.getElementById('title').value;
+        var url     = `/searchSongsByTitle?search=${search.split(' ').join('%20')}`;
 
-    if (title)
-        location.href = url;
+        if (search)
+            location.href = url;
+    } else {
+        var search  = document.getElementById('artist').value;
+        var url     = `/searchSongsByArtist?search=${search.split(' ').join('%20')}`;
+
+        if (search)
+            location.href = url;
+    }
 }
 
+
+// Function that creates html code for displaying a song.
 function showSong(data) {
     console.log(data);
 
@@ -81,18 +94,16 @@ function showSong(data) {
     element.appendChild(text);
 }
 
+// Function that creates html code for displaying a list of songs.
 function createSongList(data) {
     console.log(data);
     var element         = document.getElementById('result-div');
-    var tag             = document.createElement('h1');
+    var tag             = null;
     var att             = null;
     var text            = null;
     
     if (data.status == 200) {
         var songs   = JSON.parse(data.responseText);
-        text    = document.createTextNode(`Results for: ${title}.`);
-        tag.appendChild(text);
-        element.appendChild(tag);
         
         for (var i = 0; (i < songs.length); i++) {
             tag         = document.createElement('a');
@@ -108,6 +119,7 @@ function createSongList(data) {
         }
 
     } else {
+        tag         = document.createElement('h3');
         text        = document.createTextNode(`Error 404: ${data.responseText}`);
         tag.appendChild(text);
         element.appendChild(tag);

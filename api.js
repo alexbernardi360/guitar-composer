@@ -25,8 +25,12 @@ app.get('/', function(request, response) {
     response.status(200).sendFile(`${__dirname}/views/index.html`);
 });
 
-app.get('/searchTitle', function(request, response) {
-    response.status(200).sendFile(`${__dirname}/views/listTitles.html`);
+app.get('/searchSongsByTitle', function(request, response) {
+    response.status(200).sendFile(`${__dirname}/views/listSongsByTitles.html`);
+});
+
+app.get('/searchSongsByArtist', function(request, response) {
+    response.status(200).sendFile(`${__dirname}/views/listSongsByArtists.html`);
 });
 
 app.get('/showSong', function(request, response) {
@@ -187,7 +191,7 @@ app.get('/api/getSong', async function(request, response) {
     var artist          = request.query.artist.split("`").join("'");
 
     var queryString     = `SELECT * FROM public."Songs" WHERE title='${title.split("'").join("`")}' AND  artist='${artist.split("'").join("`")}'`;
-    var path = `/api/v1/json/${process.env.APIKEY}/searchtrack.php?s=${artist.split("`").join("`")}&t=${title.split("`").join("'")}`;
+    var path            = `/api/v1/json/${process.env.APIKEY}/searchtrack.php?s=${artist.split("`").join("`")}&t=${title.split("`").join("'")}`;
     var options         = {
         host:   'theaudiodb.com',
         path:   path.split(" ").join("%20")
