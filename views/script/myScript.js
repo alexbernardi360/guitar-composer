@@ -142,7 +142,7 @@ function signIn() {
     var password    = document.getElementById('password').value;
     var passConf    = document.getElementById('passwordConfirm').value;
 
-    if (username && password && passConf) {
+    if (username && password && passConf)
         if (passConf == password) {
             var url     = '/api/join';
             var params  = `username=${username}&password=${password}`
@@ -150,10 +150,34 @@ function signIn() {
                 console.log(result);
                 alert(result.responseText);
                 if (result.status == 200)
-                    window.location.href = "/";
+                    window.location.href = '/';
             });
         } else
             alert('The two passwords must match.');
+    else
+        alert('You must enter all the required data.');
+}
+
+function addSong() {
+    var title       = document.getElementById('title').value;
+    var artist      = document.getElementById('artist').value;
+    var tuning      = document.getElementById('tuning').value;
+    var capo        = document.getElementById('capo').value;
+    var note        = document.getElementById('note').value;
+    var content     = document.getElementById('content').value;
+    var username    = document.getElementById('username').value;
+    var password    = document.getElementById('password').value;
+
+    if (title && artist && username && password) {
+        var url     = '/api/addSong';
+        var params  = `title=${title}&artist=${artist}&tuning=${tuning}&capo=${capo}&` +
+                      `note=${note}&content=${content}&username=${username}&password=${password}`;
+        httpPostAsync(url, params, function(result) {
+            console.log(result);
+            alert(result.responseText);
+            if (result.status == 200)
+                window.location.href = '/';
+        });
     } else
         alert('You must enter all the required data.');
 }

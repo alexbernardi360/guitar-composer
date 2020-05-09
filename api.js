@@ -25,6 +25,10 @@ app.get('/', function(request, response) {
     response.status(200).sendFile(`${__dirname}/views/index.html`);
 });
 
+app.get('/addSong', function(request, response) {
+    response.status(200).sendFile(`${__dirname}/views/addSong.html`);
+});
+
 app.get('/searchSongsByTitle', function(request, response) {
     response.status(200).sendFile(`${__dirname}/views/listSongsByTitles.html`);
 });
@@ -202,8 +206,6 @@ app.get('/api/getSong', async function(request, response) {
         if (result_query.rowCount > 0) {
             // Request for extra data from the API theaudiodb.com
             var request = https.get(options, function (result) {
-                console.log(`statusCode: ${result.statusCode}`);
-                console.log(`headers: ${result.headers}`);
 
                 result.on('data', function(data) {
                     // processing data from external API.
