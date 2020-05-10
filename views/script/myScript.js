@@ -55,9 +55,14 @@ function showSong(data) {
         element.setAttributeNode(att);
     } else {
         att     = document.createAttribute('class');
-        att.value   = 'btn btn-primary disabled';
+        att.value   = 'btn btn-primary btn-xs disabled';
         element.setAttributeNode(att);
     }
+
+    // Add song owner
+    element = document.getElementById('owner');
+    text    = document.createTextNode(song.owner);
+    element.appendChild(text);
 
     // Add album
     element = document.getElementById('album');

@@ -218,7 +218,7 @@ app.get('/api/getSong', async function(request, response) {
                         capo:       result_query.rows[0].capo,
                         note:       result_query.rows[0].note,
                         content:    result_query.rows[0].content,
-                        username:   result_query.rows[0].username,
+                        owner:      result_query.rows[0].username_fk,
                         album:      null,
                         trackNo:    null,
                         genre:      null,
