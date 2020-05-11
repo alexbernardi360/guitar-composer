@@ -17,7 +17,6 @@ function searchSongs(type) {
     }
 }
 
-
 // Function that creates html code for displaying a song.
 function showSong(data) {
     console.log(data);
@@ -64,6 +63,11 @@ function showSong(data) {
     text    = document.createTextNode(song.owner);
     element.appendChild(text);
 
+    // Add song owner in modal
+    element = document.getElementById('owner-modal');
+    text    = document.createTextNode(song.owner);
+    element.appendChild(text);
+
     // Add album
     element = document.getElementById('album');
     if (song.album != null)
@@ -96,6 +100,20 @@ function showSong(data) {
     // Add content
     element = document.getElementById('content');
     text    = document.createTextNode(song.content);
+    element.appendChild(text);
+
+    // Add delete button
+    element     = document.getElementById("delete-btn");
+    att         = document.createAttribute("class");
+    att.value   = "btn btn-danger btn-xs";
+    text        = document.createTextNode("Delete");
+    element.setAttributeNode(att);
+    att         = document.createAttribute("data-toggle");
+    att.value   = "modal";
+    element.setAttributeNode(att)
+    att         = document.createAttribute("data-target");
+    att.value   = "#passModal";
+    element.setAttributeNode(att)
     element.appendChild(text);
 }
 
@@ -163,6 +181,24 @@ function signIn() {
         alert('You must enter all the required data.');
 }
 
+function deleteSong() {
+    var title       = document.getElementById('title').textContent;
+    var artist      = document.getElementById('artist').textContent;
+    var username    = document.getElementById('owner').textContent;
+    var password    = document.getElementById('password').value;
+
+    if (password) {
+        var url     = '/api/deleteSong';
+        var params  = `title=${title}&artist=${artist}&username=${username}&password=${password}`;
+        httpDeleteAsync(url, params, function(result) {
+            alert(result.responseText);
+            if (result.status == 200)
+                window.location.href = '/';
+        });
+    } else 
+        alert('You must enter the password.');
+}
+
 function addSong() {
     var title       = document.getElementById('title').value;
     var artist      = document.getElementById('artist').value;
@@ -190,11 +226,11 @@ function addSong() {
 // Generic function to perform GET requests.
 function httpGetAsync(url, callback) {
     var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open('GET', url, true);     // true for asynchronous 
     xmlHttp.onreadystatechange = function() { 
         if (xmlHttp.readyState == XMLHttpRequest.DONE)
             callback(xmlHttp);
     }
-    xmlHttp.open('GET', url, true);     // true for asynchronous 
     xmlHttp.send(null);
 }
 
@@ -211,5 +247,19 @@ function httpPostAsync(url, params, callback) {
             callback(xmlHttp);
         }
     }  
+    xmlHttp.send(params);
+}
+
+function httpDeleteAsync(url, params, callback) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("DELETE", url, true);    // true for asynchronous
+
+    //Send the proper header information along with the request
+    xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == XMLHttpRequest.DONE)
+            callback(xmlHttp);
+    }
     xmlHttp.send(params);
 }
