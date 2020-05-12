@@ -181,6 +181,23 @@ function signIn() {
         alert('You must enter all the required data.');
 }
 
+function deleteUser() {
+    var username    = document.getElementById('username').value;
+    var password    = document.getElementById('password').value;
+
+    if (username && password) {
+        var url     = '/api/deleteAccount';
+        var params  = `username=${username}&password=${password}`
+        httpDeleteAsync(url, params, function(result) {
+            console.log(result);
+            alert(result.responseText);
+            if (result.status == 200)
+                window.location.href = '/';
+        });
+    } else
+        alert('You must enter all the required data.');
+}
+
 function deleteSong() {
     var title       = document.getElementById('title').textContent;
     var artist      = document.getElementById('artist').textContent;

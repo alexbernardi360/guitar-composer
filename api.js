@@ -39,10 +39,14 @@ app.get('/searchSongsByArtist', function(request, response) {
 
 app.get('/showSong', function(request, response) {
     response.status(200).sendFile(`${__dirname}/views/showSong.html`);
-})
+});
 
 app.get('/register', function(request, response) {
     response.status(200).sendFile(`${__dirname}/views/register.html`);
+});
+
+app.get('/deleteAccount', function(request, response) {
+    response.status(200).sendFile(`${__dirname}/views/deleteAccount.html`);
 })
 
 /********************************/
