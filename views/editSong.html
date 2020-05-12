@@ -30,7 +30,7 @@
                 <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
                     <li><a href="/">Home</a></li>
-                    <li><a href="/addSong">Add Song</a></li>
+                    <li class="active"><a>Add Song</a></li>
                     <li><a href="/deleteAccount">Delete Account</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -45,78 +45,69 @@
                 <div class="col-sm-2"></div>
 
                 <div class="col-sm-8" id="registration">
-                    <h4><small>Show Song</small></h4>
+                    <h4><small>Edit Song</small></h4>
                     <hr>
-                    <h1 id="title"></h1>
-                    <h3 id="artist"></h2>
-                    <hr>
+                    <h1>Edit the song data.</h1>
 
-                    <div class="container-fluid">
-                        <div class="col-sm-6">
-                            <p id="tuning"><b>Tuning: </b></p>
-                            <p id=capo><b>Capo: </b></p>
+                    <div class="form-group">
+                        <label for="title" class="control-label">Title</label>
+                        <input id="title" class="form-control" name="title" placeholder="Title" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="artist" class="control-label">Artist</label>
+                        <input id="artist" class="form-control" name="artist" placeholder="Artist" disabled>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-sm-6">
+                            <label for="tuning" class="control-label">Tuning</label>
+                            <input id="tuning" class="form-control" name="tuning" placeholder="Tuning">
                         </div>
-
-                        <div class="col-sm-6">
-                            <p id="album"><b>Album: </b></p>
-                            <p id="trackNo"><b>Track No: </b></p>
-                            <p id="genre"><b>Genre: </b></p>
+                        <div class="form-group col-sm-6">
+                            <label for="capo" class="control-label">Capo</label>
+                            <input id="capo" class="form-control" name="capo" placeholder="Capo">
                         </div>
                     </div>
 
-                    <hr>
+                    <div class="form-group">
+                        <label for="note" class="control-label">Note</label>
+                        <textarea id="note" class="form-control" name="note" placeholder="Note" rows="5"></textarea>
+                    </div>
 
-                    <div class="container-fluid">
-                        <div class="col-sm-6">
-                            <p><b>Uploaded by: </b><mytag id="owner"></mytag></b></p>
-                        </div>
-
-                        <div class="col-sm-6">
-                            <a target="_blank" id="musicVid" class="btn btn-primary btn-xs">Music Video</a>
-                            <a id="edit-btn" ></a>
-                            <a id="delete-btn" ></a>
-                        </div>
+                    <div class="form-group">
+                        <label for="content" class="control-label">Content</label>
+                        <textarea id="content" class="form-control" name="content" placeholder="Content" rows="20"></textarea>
                     </div>
 
                     <hr>
-                    
-                    <pre class="pre-scrollable" style="max-height: 60px" id="note"><b>Note:</b><br></pre>
-                    <hr>
-                    <pre class="pre-scrollable" style="max-height: 80vh" id="content"></pre>
+                    <p>Enter your login credentials to edit the song.</p>
 
+                    <div class="row">
+                        <div class="form-group col-sm-6">
+                            <label for="Username" class="control-label">Username</label>
+                            <input id="username" class="form-control" name="username" placeholder="Username" disabled>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label for="password" class="control-label">Password</label>
+                            <input type="password" id="password" class="form-control" name="password" placeholder="Password">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button id="edit-btn" type="submit" class="btn btn-warning" >Edit</button>
+                    </div>
                 </div>
                 <script>
                     var urlParams   = new URLSearchParams(window.location.search);
                     var title       = urlParams.get('title');
                     var artist      = urlParams.get('artist');
                     var url         = `./api/getSong?title=${title.split(" ").join("%20")}&artist=${artist.split(" ").join("%20")}`;
-                    httpGetAsync(url, showSong);
+                    httpGetAsync(url, fillInputFields);
                 </script>
 
                 <div class="col-sm-2"></div>
 
-            </div>
-        </div>
-
-        <!-- Modal -->
-        <div class="modal fade" id="passModal" role="dialog">
-            <div class="modal-dialog">
-            
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 id="owner-modal" class="modal-title">Enter your password </h4>
-                </div>
-                <div class="modal-body">
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-                    <p id="error"></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteSong()">Delete</button>
-                </div>
-            </div>
-            
             </div>
         </div>
 

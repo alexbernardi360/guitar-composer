@@ -27,8 +27,8 @@ function showSong(data) {
     var text    = null;
 
     // Add title
-    var element = document.getElementById('title');
-    var text    = document.createTextNode(song.title);
+    element = document.getElementById('title');
+    text    = document.createTextNode(song.title);
     element.appendChild(text);
     
     // Add artist
@@ -103,17 +103,28 @@ function showSong(data) {
     element.appendChild(text);
 
     // Add delete button
-    element     = document.getElementById("delete-btn");
-    att         = document.createAttribute("class");
-    att.value   = "btn btn-danger btn-xs";
-    text        = document.createTextNode("Delete");
+    element     = document.getElementById('delete-btn');
+    att         = document.createAttribute('class');
+    att.value   = 'btn btn-danger btn-xs';
     element.setAttributeNode(att);
-    att         = document.createAttribute("data-toggle");
-    att.value   = "modal";
+    att         = document.createAttribute('data-toggle');
+    att.value   = 'modal';
     element.setAttributeNode(att)
-    att         = document.createAttribute("data-target");
-    att.value   = "#passModal";
-    element.setAttributeNode(att)
+    att         = document.createAttribute('data-target');
+    att.value   = '#passModal';
+    element.setAttributeNode(att);
+    text        = document.createTextNode('Delete');
+    element.appendChild(text);
+
+    // Add edit button
+    element     = document.getElementById('edit-btn');
+    att         = document.createAttribute('class');
+    att.value   = 'btn btn-warning btn-xs';
+    element.setAttributeNode(att);
+    att         = document.createAttribute('href');
+    att.value   = `/editSong?title=${song.title.split(" ").join("%20")}&artist=${song.artist.split(" ").join("%20")}`;
+    element.setAttributeNode(att);
+    text        = document.createTextNode('Edit');
     element.appendChild(text);
 }
 
@@ -160,6 +171,28 @@ function createSongList(data) {
     }
 }
 
+function fillInputFields(data) {
+    console.log(data);
+
+    var song    = JSON.parse(data.responseText);
+    var element = null;
+    var att     = null;
+
+    document.getElementById('title').value = song.title;
+    document.getElementById('artist').value = song.artist;
+    document.getElementById('tuning').value = song.tuning;
+    document.getElementById('capo').value = song.capo;
+    document.getElementById('note').value = song.note;
+    document.getElementById('content').value = song.content;
+    document.getElementById('username').value = song.owner;
+
+    // add onclick for Edit button
+    element = document.getElementById('edit-btn');
+    att         = document.createAttribute('onclick');
+    att.value   = 'editSong()';
+    element.setAttributeNode(att);
+}
+
 function signIn() {
     var username    = document.getElementById('username').value;
     var password    = document.getElementById('password').value;
@@ -198,24 +231,6 @@ function deleteUser() {
         alert('You must enter all the required data.');
 }
 
-function deleteSong() {
-    var title       = document.getElementById('title').textContent;
-    var artist      = document.getElementById('artist').textContent;
-    var username    = document.getElementById('owner').textContent;
-    var password    = document.getElementById('password').value;
-
-    if (password) {
-        var url     = '/api/deleteSong';
-        var params  = `title=${title}&artist=${artist}&username=${username}&password=${password}`;
-        httpDeleteAsync(url, params, function(result) {
-            alert(result.responseText);
-            if (result.status == 200)
-                window.location.href = '/';
-        });
-    } else 
-        alert('You must enter the password.');
-}
-
 function addSong() {
     var title       = document.getElementById('title').value;
     var artist      = document.getElementById('artist').value;
@@ -238,6 +253,56 @@ function addSong() {
         });
     } else
         alert('You must enter all the required data.');
+}
+
+function editSong() {
+    var title       = document.getElementById('title').value;
+    var artist      = document.getElementById('artist').value;
+    var tuning      = document.getElementById('tuning').value;
+    var capo        = document.getElementById('capo').value;
+    var note        = document.getElementById('note').value;
+    var content     = document.getElementById('content').value;
+    var username    = document.getElementById('username').value;
+    var password    = document.getElementById('password').value;
+
+    if (title && artist && username && password) {
+        var url     = '/api/editSong';
+        var params  = `title=${title}&artist=${artist}&tuning=${tuning}&capo=${capo}&` +
+                      `note=${note}&content=${content}&username=${username}&password=${password}`;
+        httpPutAsync(url, params, function(result) {
+            console.log(result);
+            alert(result.responseText);
+            if (result.status == 200)
+                window.location.href = `/showSong?title=${title}&artist=${artist}`;;
+        });
+    } else
+        alert('You must enter the password.');
+}
+
+function deleteSong() {
+    var title       = document.getElementById('title').textContent;
+    var artist      = document.getElementById('artist').textContent;
+    var username    = document.getElementById('owner').textContent;
+    var password    = document.getElementById('password').value;
+
+    var element = null;
+    var att     = null;
+    var text    = null;
+
+    if (password) {
+        var url     = '/api/deleteSong';
+        var params  = `title=${title}&artist=${artist}&username=${username}&password=${password}`;
+        httpDeleteAsync(url, params, function(result) {
+            alert(result.responseText);
+            if (result.status == 200)
+                window.location.href = '/';
+        });
+    } else {
+        // Add error on modal
+        element = document.getElementById('error');
+        text    = document.createTextNode('You must enter the password!');
+        element.appendChild(text);
+    }
 }
 
 // Generic function to perform GET requests.
@@ -267,9 +332,25 @@ function httpPostAsync(url, params, callback) {
     xmlHttp.send(params);
 }
 
+// Generic function to perfotm DELETE request.
 function httpDeleteAsync(url, params, callback) {
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("DELETE", url, true);    // true for asynchronous
+    xmlHttp.open("DELETE", url, true);      // true for asynchronous
+
+    //Send the proper header information along with the request
+    xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == XMLHttpRequest.DONE)
+            callback(xmlHttp);
+    }
+    xmlHttp.send(params);
+}
+
+// Generic function to perfotm PUT request.
+function httpPutAsync(url, params, callback) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("PUT", url, true);     // true for asynchronous
 
     //Send the proper header information along with the request
     xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');

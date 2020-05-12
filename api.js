@@ -41,6 +41,10 @@ app.get('/showSong', function(request, response) {
     response.status(200).sendFile(`${__dirname}/views/showSong.html`);
 });
 
+app.get('/editSong', function(request, response) {
+    response.status(200).sendFile(`${__dirname}/views/editSong.html`);
+});
+
 app.get('/register', function(request, response) {
     response.status(200).sendFile(`${__dirname}/views/register.html`);
 });
