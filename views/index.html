@@ -4,6 +4,14 @@
     <head>
         <title>Guitar Composer</title>
         <link rel="icon" href="img/guitar-headstock.ico">
+
+        <!-- Chrome, Firefox OS and Opera -->
+        <meta name="theme-color" content="#333333">
+        <!-- Windows Phone -->
+        <meta name="msapplication-navbutton-color" content="#333333">
+        <!-- iOS Safari -->
+        <meta name="apple-mobile-web-app-status-bar-style" content="#333333">
+
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -43,22 +51,22 @@
 
         <div class="container-fluid">
             <div class="row content">
-                <div class="col-sm-2">
-                </div>
+
+                <div class="col-sm-2"></div>
+
                 <div class="col-sm-8">
                     <h4><small>Home Page</small></h4>
                     <hr>
                     <h1>Welcome to Guitar Composer</h1>
                     <br>
-                    <h4>
-                        Guitar Composer is a platform for guitarists.<br>
-                        The intent is to make songs lyrics with chords, public to anyone.<br>
-                        Anyone can register and post content on the platform.<br>
-                    </h4>
+                    <p>Guitar Composer is a platform for guitarists.</p>
+                    <p>The intent is to make songs lyrics with chords, public to anyone.</p>
+                    <p>Register for free to upload new songs.</p>
 
                     <hr>
+
                     <div class="input-group search">
-                        <input id="title" type="text" class="form-control" placeholder="Search songs by title...">
+                        <input id="title" type="text" class="form-control" placeholder="Search by title...">
                         <span class="input-group-btn">
                             <button class="btn btn-default" type="button" onclick="searchSongs(true)">
                                 <span class="glyphicon glyphicon-search"></span>
@@ -67,24 +75,29 @@
                     </div>
 
                     <hr>
+
                     <div class="input-group search">
-                        <input id="artist" type="text" class="form-control" placeholder="Search songs by artist...">
+                        <input id="artist" type="text" class="form-control" placeholder="Search by artist...">
                         <span class="input-group-btn">
                             <button class="btn btn-default" type="button" onclick="searchSongs(false)">
                                 <span class="glyphicon glyphicon-search"></span>
                             </button>
                         </span>
                     </div>
+                </div>
 
-                </div>
-                <div class="col-sm-2">
-                </div>
+                <div class="col-sm-2"></div>
+
             </div>
         </div>
 
-        <footer class="container-fluid">
-            <p>Footer Text</p>
+        <!-- Footer -->
+        <footer>
+            <div class="text-center footer-copyright py-3">
+                <p>Powered by: <a target="_blank" target="_blank" href="https://heroku.com/">heroku.com</a></p>
+            </div>
         </footer>
+        <!-- Footer -->
 
     </body>
 </html>

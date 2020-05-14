@@ -4,33 +4,11 @@
     border-radius: 0;
 }
 
-/* Set height of the grid so .sidenav can be 100% (adjust if needed) */
-.row.content {min-height: 100vh}
+/* Set height of the grid */
+.row.content {min-height: 100%}
 
-/* Set dark background color, white text and some padding */
-footer {
-    background-color: #555;
-    color: white;
-    padding: 15px;
-
-    clear: both;
-    position: relative;
-}
-
-/* On small screens, set height to 'auto' for sidenav and grid */
-@media screen and (max-width: 767px) {
-    .row.content {min-height: 100vh}
-
-    footer {
-        background-color: #555;
-        color: white;
-        padding: 15px;
-    
-        clear: both;
-        position: relative;
-    }
-
-}
+/* On small screens*/
+@media screen and (max-width: 767px) {.row.content {min-height: 100%}}
 
 .search {
     width: 50%;
@@ -38,3 +16,16 @@ footer {
 }
 
 textarea {resize: vertical}
+
+body {
+    min-height: 100vh;
+    position: relative;
+    margin: 0;
+    padding-bottom: 200px;
+  }
+  
+  footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  }

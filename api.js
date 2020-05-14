@@ -266,7 +266,7 @@ app.get('/api/songsList', function(request, response) {
             console.log(error);
             response.status(400).send(error);
         } else if (result.rowCount > 0) {
-            response.status(200).send(JSON.stringify(result.rows));
+            response.status(200).send(result.rows);
         } else response.status(404).send('Songs not found.');
     });
 });
@@ -281,7 +281,7 @@ app.get('/api/songsListByArtist', function(request, response) {
             console.log(error);
             response.status(400).send(error);
         } else if (result.rowCount > 0) {
-            response.status(200).send(JSON.stringify(result.rows));
+            response.status(200).send(result.rows);
         } else response.status(404).send('Songs not found.');
     });
 });
@@ -296,7 +296,7 @@ app.get('/api/songsListByTitle', function(request, response) {
             console.log(error);
             response.status(400).send(error);
         } else if (result.rowCount > 0) {
-            response.status(200).send(JSON.stringify(result.rows));
+            response.status(200).send(result.rows);
         } else response.status(404).send('Songs not found.');
     });
 });
