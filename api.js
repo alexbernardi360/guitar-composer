@@ -260,7 +260,8 @@ app.get('/api/getSong', async function(request, response) {
 
 // Get a list of songs available in the API.
 app.get('/api/songsList', function(request, response) {
-    var queryString = `SELECT title, artist FROM public."Songs"`;
+    var queryString = `SELECT title, artist FROM public."Songs" ` + 
+                      `ORDER BY title ASC, artist ASC`;
     pool.query(queryString, function(error, result) {
         if (error) {
             console.log(error);
@@ -275,7 +276,9 @@ app.get('/api/songsList', function(request, response) {
 app.get('/api/songsListByArtist', function(request, response) {
     var artist          = request.query.artist.split("'").join("`");
 
-    var queryString = `SELECT title, artist FROM public."Songs" WHERE artist ILIKE '${artist}'`;
+    var queryString = `SELECT title, artist FROM public."Songs" ` +
+                      `WHERE artist ILIKE '${artist}' ` +
+                      `ORDER BY title ASC, artist ASC`;
     pool.query(queryString, function(error, result) {
         if (error) {
             console.log(error);
@@ -290,7 +293,9 @@ app.get('/api/songsListByArtist', function(request, response) {
 app.get('/api/songsListByTitle', function(request, response) {
     var title           = request.query.title.split("'").join("`");
 
-    var queryString = `SELECT title, artist FROM public."Songs" WHERE title ILIKE '${title}'`;
+    var queryString = `SELECT title, artist FROM public."Songs" ` +
+                      `WHERE title ILIKE '${title}' ` +
+                      `ORDER BY title ASC, artist ASC`;
     pool.query(queryString, function(error, result) {
         if (error) {
             console.log(error);
