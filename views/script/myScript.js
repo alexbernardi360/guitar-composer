@@ -201,8 +201,7 @@ function signIn() {
     if (username && password && passConf)
         if (passConf == password) {
             var url     = '/api/join';
-            var params  = `username=${username}&password=${password}`
-            httpPostAsync(url, params, function(result) {
+            httpPostAsync(url, null, username, password, function(result) {
                 console.log(result);
                 alert(result.responseText);
                 if (result.status == 200)
@@ -220,8 +219,7 @@ function deleteUser() {
 
     if (username && password) {
         var url     = '/api/deleteAccount';
-        var params  = `username=${username}&password=${password}`
-        httpDeleteAsync(url, params, function(result) {
+        httpDeleteAsync(url, null, username, password, function(result) {
             console.log(result);
             alert(result.responseText);
             if (result.status == 200)
@@ -243,9 +241,9 @@ function addSong() {
 
     if (title && artist && username && password) {
         var url     = '/api/addSong';
-        var params  = `title=${title}&artist=${artist}&tuning=${tuning}&capo=${capo}&` +
-                      `note=${note}&content=${content}&username=${username}&password=${password}`;
-        httpPostAsync(url, params, function(result) {
+        var body  = `title=${title}&artist=${artist}&tuning=${tuning}&capo=${capo}` +
+                      `&note=${note}&content=${content}`;
+        httpPostAsync(url, body, username, password, function(result) {
             console.log(result);
             alert(result.responseText);
             if (result.status == 200)
@@ -267,9 +265,9 @@ function editSong() {
 
     if (title && artist && username && password) {
         var url     = '/api/editSong';
-        var params  = `title=${title}&artist=${artist}&tuning=${tuning}&capo=${capo}&` +
-                      `note=${note}&content=${content}&username=${username}&password=${password}`;
-        httpPutAsync(url, params, function(result) {
+        var body  = `title=${title}&artist=${artist}&tuning=${tuning}&capo=${capo}&` +
+                      `note=${note}&content=${content}`;
+        httpPutAsync(url, body, username, password, function(result) {
             console.log(result);
             alert(result.responseText);
             if (result.status == 200)
@@ -290,9 +288,8 @@ function deleteSong() {
     var text    = null;
 
     if (password) {
-        var url     = '/api/deleteSong';
-        var params  = `title=${title}&artist=${artist}&username=${username}&password=${password}`;
-        httpDeleteAsync(url, params, function(result) {
+        var url     = `/api/deleteSong?title=${title}&artist=${artist}`;
+        httpDeleteAsync(url, username, password, function(result) {
             alert(result.responseText);
             if (result.status == 200)
                 window.location.href = '/';
@@ -317,47 +314,59 @@ function httpGetAsync(url, callback) {
 }
 
 // Generic function to perfotm POST request.
-function httpPostAsync(url, params, callback) {
+function httpPostAsync(url, body, username, password, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open('POST', url, true);    // true for asynchronous 
 
     //Send the proper header information along with the request
     xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    if (username && password) {
+        xmlHttp.setRequestHeader('username', username);
+        xmlHttp.setRequestHeader('password', password);
+    }
 
     xmlHttp.onreadystatechange = function() {
         if(xmlHttp.readyState == XMLHttpRequest.DONE) {
             callback(xmlHttp);
         }
     }  
-    xmlHttp.send(params);
+    xmlHttp.send(body);
 }
 
 // Generic function to perfotm DELETE request.
-function httpDeleteAsync(url, params, callback) {
+function httpDeleteAsync(url, username, password, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open("DELETE", url, true);      // true for asynchronous
 
     //Send the proper header information along with the request
     xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    if (username && password) {
+        xmlHttp.setRequestHeader('username', username);
+        xmlHttp.setRequestHeader('password', password);
+    }
 
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == XMLHttpRequest.DONE)
             callback(xmlHttp);
     }
-    xmlHttp.send(params);
+    xmlHttp.send(null);
 }
 
 // Generic function to perfotm PUT request.
-function httpPutAsync(url, params, callback) {
+function httpPutAsync(url, body, username, password, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open("PUT", url, true);     // true for asynchronous
 
     //Send the proper header information along with the request
     xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    if (username && password) {
+        xmlHttp.setRequestHeader('username', username);
+        xmlHttp.setRequestHeader('password', password);
+    }
 
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == XMLHttpRequest.DONE)
             callback(xmlHttp);
     }
-    xmlHttp.send(params);
+    xmlHttp.send(body);
 }

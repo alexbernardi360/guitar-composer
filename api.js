@@ -51,7 +51,7 @@ app.get('/register', function(request, response) {
 
 app.get('/deleteAccount', function(request, response) {
     response.status(200).sendFile(`${__dirname}/views/deleteAccount.html`);
-})
+});
 
 /********************************/
 /*        API ENDPOINTS         */
@@ -59,8 +59,8 @@ app.get('/deleteAccount', function(request, response) {
 
 // Register in the API.
 app.post('/api/join', async function(request, response) {
-    var username        = request.body.username.split("'").join("`");
-    var password        = request.body.password.split("'").join("`");
+    var username        = request.headers.username.split("'").join("`");
+    var password        = request.headers.password.split("'").join("`");
 
     if (!await utils.validateUsername(username))
         response.status(422).send(`Username not available.`);
@@ -83,8 +83,8 @@ app.post('/api/join', async function(request, response) {
 
 // Delete account in the API. 
 app.delete('/api/deleteAccount', function (request, response) {
-    var username        = request.body.username.split("'").join("`");;
-    var password        = request.body.password.split("'").join("`");;
+    var username        = request.headers.username.split("'").join("`");;
+    var password        = request.headers.password.split("'").join("`");;
 
     var queryString     = `DELETE FROM public."Users" WHERE username='${username}' AND password='${password}'`;
 
@@ -113,8 +113,8 @@ app.post('/api/addSong', async function(request, response) {
     var note            = request.body.note.split("'").join("`");
     var content         = request.body.content.split("'").join("`");
 
-    var username        = request.body.username;
-    var password        = request.body.password;
+    var username        = request.headers.username;
+    var password        = request.headers.password;
 
     if (!await utils.validateAuth(username, password))
         response.status(401).send(`Authentication Failed: invalid username and/or password.`);
@@ -145,8 +145,8 @@ app.put('/api/editSong', async function(request, response) {
     var note            = request.body.note.split("'").join("`");
     var content         = request.body.content.split("'").join("`");
 
-    var username        = request.body.username.split("'").join("`");
-    var password        = request.body.password.split("'").join("`");
+    var username        = request.headers.username.split("'").join("`");
+    var password        = request.headers.password.split("'").join("`");
 
     if (await utils.validateSong(title, artist))
         response.status(404).send(`Song not found.`);
@@ -172,10 +172,11 @@ app.put('/api/editSong', async function(request, response) {
 
 // Delete a song in the API.
 app.delete('/api/deleteSong', async function(request, response) {
-    var title           = request.body.title.split("'").join("`");
-    var artist          = request.body.artist.split("'").join("`");
-    var username        = request.body.username.split("'").join("`");
-    var password        = request.body.password.split("'").join("`");
+    var title           = request.query.title.split("'").join("`");
+    var artist          = request.query.artist.split("'").join("`");
+
+    var username        = request.headers.username.split("'").join("`");
+    var password        = request.headers.password.split("'").join("`");
 
     if (await utils.validateSong(title, artist))
         response.status(404).send('Song not found.');
