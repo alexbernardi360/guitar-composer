@@ -1,0 +1,478 @@
+openapi: 3.0.1
+info:
+  title: guitar-composer API
+  description: |-
+    ***Guitar Composer*** is a platform for guitarists.\
+    The intent is to make songs lyrics with chords, public to anyone.\
+    Join for free to upload new songs.
+  version: "1.0"
+  contact:
+    email: alexbernardi360@gmail.com
+    name: Alessandro Bernardi
+  license:
+    url: https://www.isc.org/licenses/
+    name: ISC
+servers:
+  - url: 'https://guitar-composer.herokuapp.com/'
+paths:
+  /api/join:
+    post:
+      description: Registration to the platform
+      parameters:
+        - name: username
+          in: header
+          schema:
+            type: string
+          example: Hummingbird
+        - name: password
+          in: header
+          schema:
+            type: string
+          example: passWord_1
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: Hummingbird, registration successful.
+        '422':
+          description: Username or password errors
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              examples:
+                '0':
+                  value: Username not available.
+                '1':
+                  value: Wrong password format.
+      tags:
+        - Account management
+  /api/deleteAccount:
+    delete:
+      description: Delete your personal account
+      parameters:
+        - name: username
+          in: header
+          schema:
+            type: string
+          example: Hummingbird
+        - name: password
+          in: header
+          schema:
+            type: string
+          example: passWord_1
+      responses:
+        '200':
+          description: Account deleted
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: Hummingbird deleted.
+        '401':
+          description: Authentication Failed
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: "Authentication Failed: invalid username and/or password." 
+      tags:
+        - Account management
+  /api/addSong:
+    post:
+      description: Add a song at the platform
+      parameters:
+        - name: username
+          in: header
+          schema:
+            type: string
+          example: Hummingbird
+        - name: password
+          in: header
+          schema:
+            type: string
+          example: passWord_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                artist:
+                  type: string
+                tuning:
+                  type: string
+                capo:
+                  type: string
+                note:
+                  type: string
+                content:
+                  type: string
+            example:
+              {
+                "title":    "Fly Me to the Moon",
+                "artist":   "Frank Sinatra",
+                "tuning":   "E A D G B e",
+                "capo":     "",
+                "note":     "",
+                "content":  "<lyrics with chords>"
+              }
+      responses:
+        '200':
+          description: Song successfully added
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: Song successfully added.
+        '401':
+          description: Authentication Failed
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: "Authentication Failed: invalid username and/or password."
+        '403':
+          description: The song already exists
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: The song already exists.
+      tags:
+        - Song management
+  /api/editSong:
+    put:
+      description: Edit a song to the platform
+      parameters:
+        - name: username
+          in: header
+          schema:
+            type: string
+          example: Hummingbird
+        - name: password
+          in: header
+          schema:
+            type: string
+          example: passWord_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                artist:
+                  type: string
+                tuning:
+                  type: string
+                capo:
+                  type: string
+                note:
+                  type: string
+                content:
+                  type: string
+            example:
+              {
+                "title":    "Fly Me to the Moon",
+                "artist":   "Frank Sinatra",
+                "tuning":   "E A D G B e",
+                "capo":     "",
+                "note":     "",
+                "content":  "<lyrics with chords>"
+              }
+      responses:
+        '200':
+          description: Song successfully edited
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: Song successfully edited.
+        '401':
+          description: Authentication Failed
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: "Authentication Failed: invalid username and/or password." 
+        '403':
+          description: Permission denied
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: "The user: Blackbird, does not have permission to edit the song."
+        '404':
+          description: Song not found
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: Song not found.
+      tags:
+        - Song management
+  /api/deleteSong:
+    delete:
+      description: Delete a song to the platform
+      parameters:
+        - name: artist
+          in: query
+          schema:
+            type: string
+          example: Frank%20Sinatra
+        - name: title
+          in: query
+          schema:
+            type: string
+          example: Fly%20Me%20to%20the%20Moon
+        - name: username
+          in: header
+          schema:
+            type: string
+          example: Hummingbird
+        - name: password
+          in: header
+          schema:
+            type: string
+          example: passWord_1
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+        '401':
+          description: Auto generated using Swagger Inspector
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+        '403':
+          description: Auto generated using Swagger Inspector
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+        '404':
+          description: Auto generated using Swagger Inspector
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              examples: {}
+      tags:
+        - Song management
+  /api/getSong:
+    get:
+      description: Get all the data of a specific song and extra data from theaudiodb.com
+      parameters:
+        - name: artist
+          in: query
+          schema:
+            type: string
+          example: Frank%20Sinatra
+        - name: title
+          in: query
+          schema:
+            type: string
+          example: Fly%20Me%20to%20the%20Moon
+      responses:
+        '200':
+          description: Song found, sent data about the song
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  artist:
+                    type: string
+                  tuning:
+                    type: string
+                  capo:
+                    type: string
+                  note:
+                    type: string
+                  content:
+                    type: string
+                  password:
+                    type: string
+                  owner:
+                    type: string
+                  album:
+                    type: string
+                  trackNo:
+                    type: string
+                  genre:
+                    type: string
+                  musicVid:
+                    type: string
+              example: 
+                {
+                  "title":    "Fly Me to the Moon",
+                  "artist":   "Frank Sinatra",
+                  "tuning":   "E A D G B e",
+                  "capo":     "",
+                  "note":     "",
+                  "content":  "<lyrics with chords>",
+                  "owner":    "Berna98k",
+                  "album":    "Duets II",
+                  "trackNo":  "6",
+                  "genre":    "Swing",
+                  "musicVid": null
+                }
+        '404':
+          description: Song not found
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: Song not found.
+      tags:
+        - Get songs
+  /api/songsList:
+    get:
+      description: Get a list of all the songs on the platform
+      responses:
+        '200':
+          description: DB is not empty, sent list of songs
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    artist:
+                      type: string
+              example:
+                [
+                  {
+                    "title":  "All of Me",
+                    "artist": "Frank Sinatra"
+                  },
+                  {
+                    "title":  "All of Me",
+                    "artist": "John Legend"
+                  },
+                  {
+                    "title":  "Fly Me to the Moon",
+                    "artist": "Frank Sinatra"
+                  }
+                ]
+        '404':
+          description: DB is empty, nothing to send
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: Song not found.
+      tags:
+        - Get songs
+  /api/songsListByArtist:
+    get:
+      description: Get a list of all available songs from a specific artist
+      parameters:
+        - name: artist
+          in: query
+          schema:
+            type: string
+          example: Frank%20Sinatra
+      responses:
+        '200':
+          description: Found songs by an artist, sent list of songs
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    artist:
+                      type: string
+              example:
+                [
+                  {
+                    "title":  "All of Me",
+                    "artist": "Frank Sinatra"
+                  },
+                  {
+                    "title":  "Fly Me to the Moon",
+                    "artist": "Frank Sinatra"
+                  }
+                ]
+        '404':
+          description: Songs of an artist not found
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: Songs not found.
+      tags:
+        - Get songs
+  /api/songsListByTitle:
+    get:
+      description: Get a list of all the songs available with a specific title
+      parameters:
+        - name: title
+          in: query
+          schema:
+            type: string
+          example: All%20of%20me
+      responses:
+        '200':
+          description: Found songs with a specific title
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    artist:
+                      type: string
+              example:
+                [
+                  {
+                    "title":  "All of Me",
+                    "artist": "Frank Sinatra"
+                  },
+                  {
+                    "title":  "All of Me",
+                    "artist": "John Legend"
+                  }
+                ]
+        '404':
+          description: Songs with a specific title not found
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+              example: Songs not found.
+      tags:
+        - Get songs
+tags:
+  - name: Account management
+  - name: Song management
+  - name: Get songs
+externalDocs:
+  description: GitHub
+  url: https://github.com/alexbernardi360/guitar-composer

@@ -1,3 +1,6 @@
+# Automatically added with "npn install"
 node_modules/
+
+# Environment variables required:
+# NODE_ENV, PORT, DATABASE_URL, APIKEY
 .env
-package-lock.json
