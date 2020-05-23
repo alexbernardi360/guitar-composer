@@ -10,8 +10,8 @@ info:
     email: alexbernardi360@gmail.com
     name: Alessandro Bernardi
   license:
-    url: https://www.isc.org/licenses/
-    name: ISC
+    url: https://opensource.org/licenses/MIT
+    name: MIT
 servers:
   - url: 'https://guitar-composer.herokuapp.com/'
 paths:

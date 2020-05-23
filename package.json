@@ -11,7 +11,7 @@
     "url": "git+https://github.com/alexbernardi360/guitar-composer.git"
   },
   "author": "Alessandro Bernardi",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/alexbernardi360/guitar-composer/issues"
   },
