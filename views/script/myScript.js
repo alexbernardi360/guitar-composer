@@ -264,7 +264,7 @@ function editSong() {
     var password    = document.getElementById('password').value;
 
     if (title && artist && username && password) {
-        var url     = `./api/song/${artist.split(" ").join("%20")}/${artist.split(" ").join("%20")}`;
+        var url     = `./api/song/${artist.split(" ").join("%20")}/${title.split(" ").join("%20")}`;
         var body    = `tuning=${tuning}&capo=${capo}&` +
                       `note=${note}&content=${content}`;
         httpPutAsync(url, body, username, password, function(result) {
@@ -288,7 +288,7 @@ function deleteSong() {
     var text    = null;
 
     if (password) {
-        var url     = `./api/song/${artist.split(" ").join("%20")}/${artist.split(" ").join("%20")}`;
+        var url     = `./api/song/${artist.split(" ").join("%20")}/${title.split(" ").join("%20")}`;
         httpDeleteAsync(url, username, password, function(result) {
             alert(result.responseText);
             if (result.status == 200)
