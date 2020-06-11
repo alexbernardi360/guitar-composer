@@ -111,7 +111,7 @@
                     var urlParams   = new URLSearchParams(window.location.search);
                     var title       = urlParams.get('title');
                     var artist      = urlParams.get('artist');
-                    var url         = `./api/getSong?title=${title.split(" ").join("%20")}&artist=${artist.split(" ").join("%20")}`;
+                    var url         = `/api/song/${artist.split(" ").join("%20")}/${title.split(" ").join("%20")}`;
                     httpGetAsync(url, fillInputFields);
                 </script>
 

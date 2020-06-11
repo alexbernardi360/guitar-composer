@@ -69,7 +69,7 @@
                     tag.appendChild(text);
 
                     // Search songs by title
-                    var url         = `./api/songsListByTitle?title=${search.split(" ").join("%20")}`;
+                    var url         = `./api/songs/search?title=${search.split(" ").join("%20")}`;
                     httpGetAsync(url, createSongList);
                 </script>
 

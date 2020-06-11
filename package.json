@@ -4,7 +4,8 @@
   "description": "A web API for guitarists.",
   "main": "api.js",
   "scripts": {
-    "start": "node api.js"
+    "start": "node api.js",
+    "dev": "nodenv api.js"
   },
   "repository": {
     "type": "git",

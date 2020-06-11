@@ -83,8 +83,8 @@ app.post('/api/join', async function(request, response) {
 
 // Delete account in the API. 
 app.delete('/api/deleteAccount', function (request, response) {
-    var username        = request.headers.username.split("'").join("`");;
-    var password        = request.headers.password.split("'").join("`");;
+    var username        = request.headers.username.split("'").join("`");
+    var password        = request.headers.password.split("'").join("`");
 
     var queryString     = `DELETE FROM public."Users" WHERE username='${username}' AND password='${password}'`;
 
@@ -137,9 +137,10 @@ app.post('/api/addSong', async function(request, response) {
 });
 
 // Edit a song in the API.
-app.put('/api/editSong', async function(request, response) {
-    var title           = request.body.title.split("'").join("`");
-    var artist          = request.body.artist.split("'").join("`");
+app.put('/api/song/:artist/:title', async function(request, response) {
+    var title           = request.params.title.split("`").join("'");
+    var artist          = request.params.artist.split("`").join("'");
+
     var tuning          = request.body.tuning.split("'").join("`");
     var capo            = request.body.capo.split("'").join("`");
     var note            = request.body.note.split("'").join("`");
@@ -171,9 +172,9 @@ app.put('/api/editSong', async function(request, response) {
 });
 
 // Delete a song in the API.
-app.delete('/api/deleteSong', async function(request, response) {
-    var title           = request.query.title.split("'").join("`");
-    var artist          = request.query.artist.split("'").join("`");
+app.delete('/api/song/:artist/:title', async function(request, response) {
+    var title           = request.params.title.split("`").join("'");
+    var artist          = request.params.artist.split("`").join("'");
 
     var username        = request.headers.username.split("'").join("`");
     var password        = request.headers.password.split("'").join("`");
@@ -199,9 +200,9 @@ app.delete('/api/deleteSong', async function(request, response) {
 });
 
 // Get a song from the API
-app.get('/api/getSong', async function(request, response) {
-    var title           = request.query.title.split("`").join("'");
-    var artist          = request.query.artist.split("`").join("'");
+app.get('/api/song/:artist/:title', async function(request, response) {
+    var title           = request.params.title.split("`").join("'");
+    var artist          = request.params.artist.split("`").join("'");
 
     var queryString     = `SELECT * FROM public."Songs" WHERE title='${title.split("'").join("`")}' AND  artist='${artist.split("'").join("`")}'`;
     var path            = `/api/v1/json/${process.env.APIKEY}/searchtrack.php?s=${artist.split("`").join("`")}&t=${title.split("`").join("'")}`;
@@ -260,7 +261,7 @@ app.get('/api/getSong', async function(request, response) {
 });
 
 // Get a list of songs available in the API.
-app.get('/api/songsList', function(request, response) {
+app.get('/api/songs', function(request, response) {
     var queryString = `SELECT title, artist FROM public."Songs" ` + 
                       `ORDER BY title ASC, artist ASC`;
     pool.query(queryString, function(error, result) {
@@ -273,36 +274,38 @@ app.get('/api/songsList', function(request, response) {
     });
 });
 
-// Get a list of songs by artist available in the API.
-app.get('/api/songsListByArtist', function(request, response) {
-    var artist          = request.query.artist.split("'").join("`");
+// Get a filtered list of songs by artist or title.
+app.get('/api/songs/search', function(request, response) {
+    var artist          = request.query.artist;
+    var title           = request.query.title;
 
-    var queryString = `SELECT title, artist FROM public."Songs" ` +
-                      `WHERE artist ILIKE '${artist}' ` +
-                      `ORDER BY title ASC, artist ASC`;
-    pool.query(queryString, function(error, result) {
-        if (error) {
-            console.log(error);
-            response.status(400).send(error);
-        } else if (result.rowCount > 0) {
-            response.status(200).send(result.rows);
-        } else response.status(404).send('Songs not found.');
-    });
-});
-
-// Get a list of songs by artist available in the API.
-app.get('/api/songsListByTitle', function(request, response) {
-    var title           = request.query.title.split("'").join("`");
-
-    var queryString = `SELECT title, artist FROM public."Songs" ` +
-                      `WHERE title ILIKE '${title}' ` +
-                      `ORDER BY title ASC, artist ASC`;
-    pool.query(queryString, function(error, result) {
-        if (error) {
-            console.log(error);
-            response.status(400).send(error);
-        } else if (result.rowCount > 0) {
-            response.status(200).send(result.rows);
-        } else response.status(404).send('Songs not found.');
-    });
+    if (artist != undefined & title == undefined) {
+        var queryString = `SELECT title, artist FROM public."Songs" ` +
+                          `WHERE artist ILIKE '${artist.split("'").join("`")}'` +
+                          `ORDER BY title ASC, artist ASC`;
+        pool.query(queryString, function(error, result) {
+            if (error) {
+                console.log(error);
+                response.status(400).send(error);
+            } else if (result.rowCount > 0) {
+                response.status(200).send(result.rows);
+            } else response.status(404).send('Songs not found.');
+        });
+    } else if (artist == undefined & title != undefined){
+        var queryString = `SELECT title, artist FROM public."Songs" ` +
+                          `WHERE title ILIKE '${title.split("'").join("`")}' ` +
+                          `ORDER BY title ASC, artist ASC`;
+        pool.query(queryString, function(error, result) {
+            if (error) {
+                console.log(error);
+                response.status(400).send(error);
+            } else if (result.rowCount > 0) {
+                response.status(200).send(result.rows);
+            } else response.status(404).send('Songs not found.');
+        });
+    } else if (artist == undefined & title == undefined) {
+        response.status(400).send('Too few arguments.');
+    } else {
+        response.status(400).send('Too many arguments.');
+    }
 });

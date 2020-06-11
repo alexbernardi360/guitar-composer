@@ -44,9 +44,9 @@ paths:
               schema:
                 type: string
               examples:
-                '0':
+                'username error':
                   value: Username not available.
-                '1':
+                'password error':
                   value: Wrong password format.
       tags:
         - Account management
@@ -146,10 +146,22 @@ paths:
               example: The song already exists.
       tags:
         - Song management
-  /api/editSong:
+  /api/song/{artist}/{title}:
     put:
       description: Edit a song to the platform
       parameters:
+        - name: artist
+          in: path
+          schema:
+            type: string
+          required: true
+          example: Frank%20Sinatra
+        - name: title
+          in: path
+          schema:
+            type: string
+          required: true
+          example: Fly%20Me%20to%20the%20Moon
         - name: username
           in: header
           schema:
@@ -166,10 +178,6 @@ paths:
             schema:
               type: object
               properties:
-                title:
-                  type: string
-                artist:
-                  type: string
                 tuning:
                   type: string
                 capo:
@@ -180,8 +188,6 @@ paths:
                   type: string
             example:
               {
-                "title":    "Fly Me to the Moon",
-                "artist":   "Frank Sinatra",
                 "tuning":   "E A D G B e",
                 "capo":     "",
                 "note":     "",
@@ -218,20 +224,21 @@ paths:
               example: Song not found.
       tags:
         - Song management
-  /api/deleteSong:
     delete:
       description: Delete a song to the platform
       parameters:
         - name: artist
-          in: query
+          in: path
           schema:
             type: string
           example: Frank%20Sinatra
+          required: true
         - name: title
-          in: query
+          in: path
           schema:
             type: string
           example: Fly%20Me%20to%20the%20Moon
+          required: true
         - name: username
           in: header
           schema:
@@ -244,49 +251,50 @@ paths:
           example: passWord_1
       responses:
         '200':
-          description: Auto generated using Swagger Inspector
+          description: Song successfully deleted
           content:
             text/html; charset=utf-8:
               schema:
                 type: string
-              examples: {}
+              example: Song successfully deleted.
         '401':
-          description: Auto generated using Swagger Inspector
+          description: Authentication Failed
           content:
             text/html; charset=utf-8:
               schema:
                 type: string
-              examples: {}
+              example: "Authentication Failed: invalid username and/or password."
         '403':
-          description: Auto generated using Swagger Inspector
+          description: Permission denied
           content:
             text/html; charset=utf-8:
               schema:
                 type: string
-              examples: {}
+              example: "The user: Blackbird, does not have permission to edit the song."
         '404':
-          description: Auto generated using Swagger Inspector
+          description: Song not found
           content:
             text/html; charset=utf-8:
               schema:
                 type: string
-              examples: {}
+              example: Song not found.
       tags:
         - Song management
-  /api/getSong:
     get:
       description: Get all the data of a specific song and extra data from theaudiodb.com
       parameters:
         - name: artist
-          in: query
+          in: path
           schema:
             type: string
           example: Frank%20Sinatra
+          required: true
         - name: title
-          in: query
+          in: path
           schema:
             type: string
           example: Fly%20Me%20to%20the%20Moon
+          required: true
       responses:
         '200':
           description: Song found, sent data about the song
@@ -342,7 +350,7 @@ paths:
               example: Song not found.
       tags:
         - Get songs
-  /api/songsList:
+  /api/songs:
     get:
       description: Get a list of all the songs on the platform
       responses:
@@ -383,15 +391,20 @@ paths:
               example: Song not found.
       tags:
         - Get songs
-  /api/songsListByArtist:
+  /api/songs/search:
     get:
-      description: Get a list of all available songs from a specific artist
+      description: Get a filtered list of songs by artist or title (at most one of the two choices).
       parameters:
         - name: artist
           in: query
           schema:
             type: string
           example: Frank%20Sinatra
+        - name: title
+          in: query
+          schema:
+            type: string
+          example: All%20of%20me
       responses:
         '200':
           description: Found songs by an artist, sent list of songs
@@ -406,62 +419,31 @@ paths:
                       type: string
                     artist:
                       type: string
-              example:
-                [
-                  {
-                    "title":  "All of Me",
-                    "artist": "Frank Sinatra"
-                  },
-                  {
-                    "title":  "Fly Me to the Moon",
-                    "artist": "Frank Sinatra"
-                  }
-                ]
+              examples:
+                'search by artist':
+                  value: [
+                    {
+                      "title":  "All of Me",
+                      "artist": "Frank Sinatra"
+                    },
+                    {
+                      "title":  "Fly Me to the Moon",
+                      "artist": "Frank Sinatra"
+                    }
+                  ]
+                'search by title':
+                  value: [
+                    {
+                      "title":  "All of Me",
+                      "artist": "Frank Sinatra"
+                    },
+                    {
+                      "title":  "All of Me",
+                      "artist": "John Legend"
+                    }
+                  ]
         '404':
-          description: Songs of an artist not found
-          content:
-            text/html; charset=utf-8:
-              schema:
-                type: string
-              example: Songs not found.
-      tags:
-        - Get songs
-  /api/songsListByTitle:
-    get:
-      description: Get a list of all the songs available with a specific title
-      parameters:
-        - name: title
-          in: query
-          schema:
-            type: string
-          example: All%20of%20me
-      responses:
-        '200':
-          description: Found songs with a specific title
-          content:
-            application/json; charset=utf-8:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    title:
-                      type: string
-                    artist:
-                      type: string
-              example:
-                [
-                  {
-                    "title":  "All of Me",
-                    "artist": "Frank Sinatra"
-                  },
-                  {
-                    "title":  "All of Me",
-                    "artist": "John Legend"
-                  }
-                ]
-        '404':
-          description: Songs with a specific title not found
+          description: Songs not found
           content:
             text/html; charset=utf-8:
               schema:

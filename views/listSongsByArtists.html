@@ -69,7 +69,7 @@
                     tag.appendChild(text);
 
                     // Search songs by artist
-                    var url         = `./api/songsListByArtist?artist=${search.split(" ").join("%20")}`;
+                    var url         = `./api/songs/search?artist=${search.split(" ").join("%20")}`;
                     httpGetAsync(url, createSongList);
                 </script>
 

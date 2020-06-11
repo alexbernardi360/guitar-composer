@@ -219,7 +219,7 @@ function deleteUser() {
 
     if (username && password) {
         var url     = '/api/deleteAccount';
-        httpDeleteAsync(url, null, username, password, function(result) {
+        httpDeleteAsync(url, username, password, function(result) {
             console.log(result);
             alert(result.responseText);
             if (result.status == 200)
@@ -264,8 +264,8 @@ function editSong() {
     var password    = document.getElementById('password').value;
 
     if (title && artist && username && password) {
-        var url     = '/api/editSong';
-        var body  = `title=${title}&artist=${artist}&tuning=${tuning}&capo=${capo}&` +
+        var url     = `./api/song/${artist.split(" ").join("%20")}/${artist.split(" ").join("%20")}`;
+        var body    = `tuning=${tuning}&capo=${capo}&` +
                       `note=${note}&content=${content}`;
         httpPutAsync(url, body, username, password, function(result) {
             console.log(result);
@@ -288,7 +288,7 @@ function deleteSong() {
     var text    = null;
 
     if (password) {
-        var url     = `/api/deleteSong?title=${title}&artist=${artist}`;
+        var url     = `./api/song/${artist.split(" ").join("%20")}/${artist.split(" ").join("%20")}`;
         httpDeleteAsync(url, username, password, function(result) {
             alert(result.responseText);
             if (result.status == 200)
