@@ -275,7 +275,7 @@ app.get('/api/songs', function(request, response) {
 });
 
 // Get a filtered list of songs by artist or title.
-app.get('/api/songs/search', function(request, response) {
+app.post('/api/songs/search', function(request, response) {
     var artist          = request.query.artist;
     var title           = request.query.title;
 

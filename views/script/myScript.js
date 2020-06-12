@@ -50,7 +50,7 @@ function showSong(data) {
     element     = document.getElementById('musicVid');
     if (song.musicVid != null) {
         att     = document.createAttribute('href');
-        att.value   = song.musicVid;
+        att.value   = `https://${song.musicVid}`;
         element.setAttributeNode(att);
     } else {
         att     = document.createAttribute('class');

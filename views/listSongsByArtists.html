@@ -70,7 +70,7 @@
 
                     // Search songs by artist
                     var url         = `./api/songs/search?artist=${search.split(" ").join("%20")}`;
-                    httpGetAsync(url, createSongList);
+                    httpPostAsync(url, null, null, null, createSongList);
                 </script>
 
                 <div class="col-sm-2">

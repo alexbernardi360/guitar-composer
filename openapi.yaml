@@ -392,7 +392,7 @@ paths:
       tags:
         - Get songs
   /api/songs/search:
-    get:
+    post:
       description: Get a filtered list of songs by artist or title (at most one of the two choices).
       parameters:
         - name: artist
