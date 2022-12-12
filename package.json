@@ -19,7 +19,7 @@
   "homepage": "https://github.com/alexbernardi360/guitar-composer#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "pg": "^8.0.2",
     "pg-connection-string": "^2.2.0"
   },
